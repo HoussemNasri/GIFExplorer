@@ -19,17 +19,17 @@ public class GifParser {
     }
 
     public GifImage parse() {
-        GifSignature signature = parseGifSignature();
+        GifHeader header = parseHeader();
         ScreenDescriptor screenDescriptor = parseScreenDescriptor();
-        return new GifImage(signature, screenDescriptor);
+        return new GifImage(header, screenDescriptor);
     }
 
-    private GifSignature parseGifSignature() {
-        StringBuilder signature = new StringBuilder();
+    private GifHeader parseHeader() {
+        StringBuilder header = new StringBuilder();
         for (int i = 0; i < 6; i++) {
-            signature.append(read());
+            header.append(read());
         }
-        return new GifSignature(signature.toString());
+        return new GifHeader(header.toString());
     }
 
     private ScreenDescriptor parseScreenDescriptor() {
