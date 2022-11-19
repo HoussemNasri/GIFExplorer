@@ -96,7 +96,6 @@ public class GifParser {
     }
 
     private ColorTable parseGlobalColorTable(int globalColorTableSize) {
-
         ColorTable colorTable = new ColorTable(globalColorTableSize);
         for (int i = 0; i < globalColorTableSize; i++) {
             int red = readByte();
@@ -109,17 +108,15 @@ public class GifParser {
     }
 
     private int parseScreenWidth() {
-        int[] widthBytes = {readByte(), readByte()};
-        return Integer.parseInt(Integer.toHexString(widthBytes[1]) + Integer.toHexString(widthBytes[0]), 16);
+        return bytesToInt(readNBytes(2));
     }
 
     private int parseScreenHeight() {
-        int[] heightBytes = {readByte(), readByte()};
-        return Integer.parseInt(Integer.toHexString(heightBytes[1]) + Integer.toHexString(heightBytes[0]), 16);
+        return bytesToInt(readNBytes(2));
     }
 
     /**
-     * Reads a single character
+     * Reads a single unsigned byte
      */
     public int readByte() {
         try {
@@ -132,9 +129,27 @@ public class GifParser {
     public char readASCIIChar() {
         try {
             return (char) reader.read();
-        } catch (
-                IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Error while reading one character", e);
         }
+    }
+
+    /**
+     * Reads N unsigned bytes in little-endian order (Least significant byte first)
+     */
+    public int[] readNBytes(int n) {
+        int[] bytes = new int[n];
+        for (int i = 0; i < n; i++) {
+            bytes[i] = readByte();
+        }
+        return bytes;
+    }
+
+    public int bytesToInt(int[] bytes) {
+        int result = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            result += bytes[i] << (i * 8);
+        }
+        return result;
     }
 }
