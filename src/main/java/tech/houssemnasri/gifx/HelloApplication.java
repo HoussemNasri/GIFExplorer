@@ -25,7 +25,8 @@ public class HelloApplication extends Application {
         GifParseResult parseResult1 = gifParser.parse();
         GifParseResult parseResult2 = gifParser2.parse();
 
-        ColorTableViewer colorTableViewer = new ColorTableViewer(parseResult1.globalColorTable);
+
+        ColorTableViewer colorTableViewer = new ColorTableViewer(parseResult1.getGlobalColorTable().orElseThrow());
         ScrollPane scrollPane = new ScrollPane(colorTableViewer);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);

@@ -34,14 +34,25 @@ public class GifParser {
     public GifParseResult parse() {
         GifHeader header = parseHeader();
         ScreenDescriptor screenDescriptor = parseScreenDescriptor();
+        GifParseResult parseResult = new GifParseResult(header, screenDescriptor);
 
-        ColorTable globalColorTable = null;
         if (screenDescriptor.hasGlobalColorTable()) {
-            globalColorTable = parseGlobalColorTable(screenDescriptor.globalColorTableSize());
+            parseResult.setGlobalColorTable(parseGlobalColorTable(screenDescriptor.globalColorTableSize()));
         }
+
+        int b;
+        do
+        {
+            b = readByte();
+            if (b == TRAILER_LABEL) {
+                break;
+            }
+            System.out.println("Hello, World");
+        } while (true);
+
         parseData();
 
-        return new GifParseResult(header, screenDescriptor, globalColorTable);
+        return parseResult;
     }
 
     private void parseData() {
@@ -54,6 +65,10 @@ public class GifParser {
         } else {
             System.out.println("None of the above detected :(");
         }
+    }
+
+    private void parseDataBlock() {
+
     }
 
     private void parseTrailer() {
@@ -132,8 +147,7 @@ public class GifParser {
     public int readByte() {
         try {
             return reader.readUnsignedByte();
-        } catch (
-                IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Error while reading one byte", e);
         }
     }
@@ -141,8 +155,7 @@ public class GifParser {
     public char readASCIIChar() {
         try {
             return (char) reader.read();
-        } catch (
-                IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Error while reading one character", e);
         }
     }

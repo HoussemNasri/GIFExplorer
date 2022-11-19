@@ -1,22 +1,23 @@
 package tech.houssemnasri.gifx;
 
-public class GifParseResult {
-    public GifHeader header;
-    public ScreenDescriptor screenDescriptor;
-    public ColorTable globalColorTable;
+import java.util.Optional;
 
-    public GifParseResult(GifHeader header, ScreenDescriptor screenDescriptor, ColorTable globalColorTable) {
-        this.header = header;
-        this.screenDescriptor = screenDescriptor;
-        setGlobalColorTable(globalColorTable);
-    }
+public class GifParseResult {
+    private final GifHeader header;
+    private final ScreenDescriptor screenDescriptor;
+    private ColorTable globalColorTable;
 
     public GifParseResult(GifHeader header, ScreenDescriptor screenDescriptor) {
-        this(header, screenDescriptor, null);
+        this.header = header;
+        this.screenDescriptor = screenDescriptor;
     }
 
     public void setGlobalColorTable(ColorTable globalColorTable) {
         this.globalColorTable = globalColorTable;
+    }
+
+    public Optional<ColorTable> getGlobalColorTable() {
+        return Optional.ofNullable(globalColorTable);
     }
 
     @Override
