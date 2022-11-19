@@ -8,8 +8,18 @@ import java.io.InputStream;
 import java.util.BitSet;
 
 public class GifParser {
+    /**
+     * Extension labels
+     */
     private static final int EXTENSION_INTRODUCER = 0x21;
+    private static final int APPLICATION_EXTENSION_LABEL = 0xFF;
+    private static final int COMMENT_EXTENSION_LABEL = 0xFE;
+    private static final int GRAPHIC_CONTROL_EXTENSION_LABEL = 0xF9;
+    private static final int PLAIN_TEXT_EXTENSION_LABEL = 0x01;
+
     private static final int IMAGE_DESCRIPTOR_LABEL = 0x2C;
+
+    private static final int TRAILER_LABEL = 0x3B;
 
     private final DataInputStream reader;
 
@@ -35,10 +45,11 @@ public class GifParser {
     }
 
     private void parseData() {
-        int b = readByte();
-        if (b == EXTENSION_INTRODUCER) {
+        int label = readByte();
+        if (label == EXTENSION_INTRODUCER) {
+            int extensionLabel = readByte();
             System.out.println("Extension Detected " + readByte());
-        } else if (b == IMAGE_DESCRIPTOR_LABEL) {
+        } else if (label == IMAGE_DESCRIPTOR_LABEL) {
             System.out.println("Image Description Label Detected");
         } else {
             System.out.println("None of the above detected :(");
@@ -121,7 +132,8 @@ public class GifParser {
     public int readByte() {
         try {
             return reader.readUnsignedByte();
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             throw new RuntimeException("Error while reading one byte", e);
         }
     }
@@ -129,7 +141,8 @@ public class GifParser {
     public char readASCIIChar() {
         try {
             return (char) reader.read();
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             throw new RuntimeException("Error while reading one character", e);
         }
     }
