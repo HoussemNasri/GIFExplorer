@@ -6,6 +6,8 @@ public class GifParseResult {
     private final GifHeader header;
     private final ScreenDescriptor screenDescriptor;
     private ColorTable globalColorTable;
+    private ApplicationExtension applicationExtension;
+    private CommentExtension commentExtension;
 
     public GifParseResult(GifHeader header, ScreenDescriptor screenDescriptor) {
         this.header = header;
@@ -18,6 +20,22 @@ public class GifParseResult {
 
     public Optional<ColorTable> getGlobalColorTable() {
         return Optional.ofNullable(globalColorTable);
+    }
+
+    public void setApplicationExtension(ApplicationExtension applicationExtension) {
+        this.applicationExtension = applicationExtension;
+    }
+
+    public Optional<ApplicationExtension> getApplicationExtension() {
+        return Optional.ofNullable(applicationExtension);
+    }
+
+    public void setCommentExtension(CommentExtension commentExtension) {
+        this.commentExtension = commentExtension;
+    }
+
+    public Optional<CommentExtension> getCommentExtension() {
+        return Optional.ofNullable(commentExtension);
     }
 
     @Override

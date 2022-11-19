@@ -40,31 +40,33 @@ public class GifParser {
             parseResult.setGlobalColorTable(parseGlobalColorTable(screenDescriptor.globalColorTableSize()));
         }
 
-        int b;
+        int label;
         do
         {
-            b = readByte();
-            if (b == TRAILER_LABEL) {
+            label = readByte();
+            if (label == TRAILER_LABEL) {
                 break;
             }
-            System.out.println("Hello, World");
+            if (label == EXTENSION_INTRODUCER) {
+                int extensionLabel = readByte();
+                switch (extensionLabel) {
+                    case APPLICATION_EXTENSION_LABEL -> parseResult.setApplicationExtension(parseApplicationExtension());
+                    case COMMENT_EXTENSION_LABEL -> parseResult.setCommentExtension(parseCommentExtension());
+                    case GRAPHIC_CONTROL_EXTENSION_LABEL -> {
+                        // Parse graphic control extension
+                        // Parse graphic rendering block
+                    } case PLAIN_TEXT_EXTENSION_LABEL -> {
+                        throw new UnsupportedBlockException("Plain text extension is not supported");
+                    }
+                }
+            } else if (label == IMAGE_DESCRIPTOR_LABEL) {
+                System.out.println(label + "Image Description");
+            } else {
+                throw new IllegalStateException("Error while parsing data blocks: " + Integer.toHexString(label));
+            }
         } while (true);
 
-        parseData();
-
         return parseResult;
-    }
-
-    private void parseData() {
-        int label = readByte();
-        if (label == EXTENSION_INTRODUCER) {
-            int extensionLabel = readByte();
-            System.out.println("Extension Detected " + readByte());
-        } else if (label == IMAGE_DESCRIPTOR_LABEL) {
-            System.out.println("Image Description Label Detected");
-        } else {
-            System.out.println("None of the above detected :(");
-        }
     }
 
     private void parseDataBlock() {
@@ -75,12 +77,12 @@ public class GifParser {
 
     }
 
-    private void parseApplicationExtension() {
-
+    private ApplicationExtension parseApplicationExtension() {
+        return null;
     }
 
-    private void parseCommentExtension() {
-
+    private CommentExtension parseCommentExtension() {
+        return null;
     }
 
     private void parseGraphicControlExtension() {
@@ -144,7 +146,7 @@ public class GifParser {
     /**
      * Reads a single unsigned byte
      */
-    public int readByte() {
+    public int readByte() throws RuntimeException {
         try {
             return reader.readUnsignedByte();
         } catch (IOException e) {
