@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.util.BitSet;
 
 public class GifParser {
+    private static final int EXTENSION_INTRODUCER = 0x21;
+    private static final int IMAGE_DESCRIPTOR_LABEL = 0x2C;
+
     private final DataInputStream reader;
 
     public GifParser(InputStream inputStream) {
@@ -26,8 +29,40 @@ public class GifParser {
         if (screenDescriptor.hasGlobalColorTable()) {
             globalColorTable = parseGlobalColorTable(screenDescriptor.globalColorTableSize());
         }
+        parseData();
 
         return new GifParseResult(header, screenDescriptor, globalColorTable);
+    }
+
+    private void parseData() {
+        int b = readByte();
+        if (b == EXTENSION_INTRODUCER) {
+            System.out.println("Extension Detected " + readByte());
+        } else if (b == IMAGE_DESCRIPTOR_LABEL) {
+            System.out.println("Image Description Label Detected");
+        } else {
+            System.out.println("None of the above detected :(");
+        }
+    }
+
+    private void parseTrailer() {
+
+    }
+
+    private void parseApplicationExtension() {
+
+    }
+
+    private void parseCommentExtension() {
+
+    }
+
+    private void parseGraphicControlExtension() {
+
+    }
+
+    private void parseGraphicBlock() {
+
     }
 
     private GifHeader parseHeader() {
@@ -89,8 +124,7 @@ public class GifParser {
     public int readByte() {
         try {
             return reader.readUnsignedByte();
-        } catch (
-                IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Error while reading one byte", e);
         }
     }
