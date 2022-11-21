@@ -44,14 +44,14 @@ public class GIFParser {
             parseResult.setGlobalColorTable(parseColorTable(screenDescriptor.globalColorTableSize()));
         }
 
-        int label;
+        int blockLabel;
         do
         {
-            label = readByte();
-            if (label == TRAILER_LABEL) {
+            blockLabel = readByte();
+            if (blockLabel == TRAILER_LABEL) {
                 break;
             }
-            if (label == EXTENSION_INTRODUCER) {
+            if (blockLabel == EXTENSION_INTRODUCER) {
                 int extensionLabel = readByte();
                 switch (extensionLabel) {
                     case APPLICATION_EXTENSION_LABEL ->
@@ -72,8 +72,8 @@ public class GIFParser {
                     }
                     // default -> throw new UnsupportedBlockException("Unknown extension label: " + extensionLabel);
                 }
-            } else if (label == IMAGE_DESCRIPTOR_LABEL) {
-                System.out.println(label + "Image Description");
+            } else if (blockLabel == IMAGE_DESCRIPTOR_LABEL) {
+                System.out.println(blockLabel + "Image Description");
             } else {
                 // throw new IllegalStateException("Error while parsing data blocks: " + Integer.toHexString(label));
             }
@@ -120,10 +120,6 @@ public class GIFParser {
         boolean hasLocalColorTable = bits.get(7);
 
         return new ImageDescriptor(leftPosition, topPosition, width, height, hasLocalColorTable, isInterlaced, isColorsSorted, localColorTableSize);
-    }
-
-    private void parseTrailer() {
-
     }
 
     private ApplicationExtension parseApplicationExtension() {
@@ -179,11 +175,8 @@ public class GIFParser {
     }
 
     private GIFHeader parseHeader() {
-        StringBuilder header = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
-            header.append(readASCIIChar());
-        }
-        return new GIFHeader(header.toString());
+        String header = readASCIIString(6);
+        return new GIFHeader(header);
     }
 
     private ScreenDescriptor parseScreenDescriptor() {
@@ -197,15 +190,14 @@ public class GIFParser {
 
         BitSet packedFieldsBits = BitSet.valueOf(new long[] {packedFields});
         boolean hasGlobalColorTable = packedFieldsBits.get(7);
-        long colorResolution = packedFieldsBits.get(4, 7).toLongArray()[0];
+        int colorResolution = bitSetToInt(packedFieldsBits.get(4, 7));
         boolean isColorsSorted = packedFieldsBits.get(3);
-        BitSet globalColorTableSizeExponentBits = packedFieldsBits.get(0, 3);
-        long globalColorTableSizeExponent = globalColorTableSizeExponentBits.toLongArray()[0];
+        long globalColorTableSizeExponent = bitSetToInt(packedFieldsBits.get(0, 3));
         int backgroundColorIndex = hasGlobalColorTable ? readByte() : 0;
         int pixelAspectRatio = readByte();
         int aspectRatio = pixelAspectRatio != 0 ? (pixelAspectRatio * 15) / 64 : 0;
 
-        return new ScreenDescriptor(width, height, hasGlobalColorTable, (int) colorResolution, isColorsSorted, (int) Math.pow(2, globalColorTableSizeExponent + 1), backgroundColorIndex, aspectRatio);
+        return new ScreenDescriptor(width, height, hasGlobalColorTable, colorResolution, isColorsSorted, (int) Math.pow(2, globalColorTableSizeExponent + 1), backgroundColorIndex, aspectRatio);
     }
 
     private ColorTable parseColorTable(int colorsCount) {
