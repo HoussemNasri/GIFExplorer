@@ -57,7 +57,7 @@ public class GIFParser {
                     case APPLICATION_EXTENSION_LABEL ->
                             parseResult.setApplicationExtension(parseApplicationExtension());
                     case COMMENT_EXTENSION_LABEL ->
-                            parseResult.setCommentExtension(parseCommentExtension());
+                            skipCommentExtension();
                     case GRAPHIC_CONTROL_EXTENSION_LABEL -> {
                         // Parse graphic control extension
                         GraphicControlExtension graphicControlExtension = parseGraphicControlExtension();
@@ -70,16 +70,21 @@ public class GIFParser {
                     case PLAIN_TEXT_EXTENSION_LABEL -> {
                         throw new UnsupportedBlockException("Plain text extension is not supported");
                     }
-                    // default -> throw new UnsupportedBlockException("Unknown extension label: " + extensionLabel);
+                    default -> throw new UnsupportedBlockException("Unknown extension label: " + extensionLabel);
                 }
             } else if (blockLabel == IMAGE_DESCRIPTOR_LABEL) {
                 parseResult.addGraphicImage(parseGraphicImage());
             } else {
-                // throw new IllegalStateException("Error while parsing data blocks: " + Integer.toHexString(label));
+                printBytes(peekNBytes(8));
+                throw new IllegalStateException("Error while parsing data blocks: " + Integer.toHexString(blockLabel));
             }
         } while (true);
 
         return parseResult;
+    }
+
+    private void skipCommentExtension() {
+        skipSubBlocks();
     }
 
     private GraphicImage parseGraphicImage() {
@@ -131,11 +136,6 @@ public class GIFParser {
 
         skipSubBlocks();
 
-        int blockTerminator = readByte();
-        if (blockTerminator != 0x00) {
-            System.out.println("Block terminator should be 0 but was " + "0x" + Integer.toHexString(blockTerminator));
-        }
-
         return new ApplicationExtension(applicationId, applicationAuthCode);
     }
 
@@ -144,7 +144,10 @@ public class GIFParser {
      */
     private void skipSubBlocks() {
         int subBlockSize = readByte();
-        readNBytes(subBlockSize);
+        while (subBlockSize != 0x00) {
+            readNBytes(subBlockSize);
+            subBlockSize = readByte();
+        }
     }
 
     private CommentExtension parseCommentExtension() {
@@ -298,7 +301,7 @@ public class GIFParser {
         }
     }
 
-    public void printBytes(int [] bytes) {
+    public void printBytes(int[] bytes) {
         System.out.println(Arrays.stream(bytes).mapToObj(b -> "0x" + Integer.toHexString(b).toUpperCase()).toList());
     }
 }

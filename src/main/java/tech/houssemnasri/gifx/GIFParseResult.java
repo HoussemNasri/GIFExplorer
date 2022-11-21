@@ -10,7 +10,6 @@ public class GIFParseResult {
     private final ScreenDescriptor screenDescriptor;
     private ColorTable globalColorTable;
     private ApplicationExtension applicationExtension;
-    private CommentExtension commentExtension;
 
     private final List<GraphicImage> graphicImages = new ArrayList<>();
 
@@ -33,14 +32,6 @@ public class GIFParseResult {
 
     public Optional<ApplicationExtension> getApplicationExtension() {
         return Optional.ofNullable(applicationExtension);
-    }
-
-    public void setCommentExtension(CommentExtension commentExtension) {
-        this.commentExtension = commentExtension;
-    }
-
-    public Optional<CommentExtension> getCommentExtension() {
-        return Optional.ofNullable(commentExtension);
     }
 
     public void addGraphicImage(GraphicImage image) {
