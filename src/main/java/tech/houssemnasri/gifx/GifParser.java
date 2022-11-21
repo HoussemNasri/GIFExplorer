@@ -1,5 +1,6 @@
 package tech.houssemnasri.gifx;
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,7 +25,7 @@ public class GifParser {
     private final DataInputStream reader;
 
     public GifParser(InputStream inputStream) {
-        reader = new DataInputStream(inputStream);
+        reader = new DataInputStream(new BufferedInputStream(inputStream));
     }
 
     public GifParser(String path) throws FileNotFoundException {
@@ -267,5 +268,31 @@ public class GifParser {
         } else {
             return (int) bitSet.toLongArray()[0];
         }
+    }
+
+    public int peekByte() {
+        try {
+            reader.mark(1);
+            int oneByte = readByte();
+            reader.reset();
+            return oneByte;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int[] peekNBytes(int n) {
+        try {
+            reader.mark(n);
+            int[] bytes = readNBytes(n);
+            reader.reset();
+            return bytes;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void printBytes(int [] bytes) {
+        System.out.println(Arrays.stream(bytes).mapToObj(b -> "0x" + Integer.toHexString(b).toUpperCase()).toList());
     }
 }
