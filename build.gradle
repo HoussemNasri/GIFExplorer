@@ -5,6 +5,10 @@ plugins {
     id 'org.beryx.jlink' version '2.25.0'
 }
 
+run {
+    enableAssertions = true
+}
+
 group 'tech.houssemnasri'
 version '1.0-SNAPSHOT'
 
