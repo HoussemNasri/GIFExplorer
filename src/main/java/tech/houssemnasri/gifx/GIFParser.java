@@ -54,15 +54,12 @@ public class GIFParser {
             if (blockLabel == EXTENSION_INTRODUCER) {
                 int extensionLabel = readByte();
                 switch (extensionLabel) {
-                    case APPLICATION_EXTENSION_LABEL ->
-                            parseResult.setApplicationExtension(parseApplicationExtension());
-                    case COMMENT_EXTENSION_LABEL ->
-                            skipCommentExtension();
+                    case APPLICATION_EXTENSION_LABEL -> parseResult.setApplicationExtension(parseApplicationExtension());
+                    case COMMENT_EXTENSION_LABEL -> skipCommentExtension();
                     case GRAPHIC_CONTROL_EXTENSION_LABEL -> {
-                        // Parse graphic control extension
                         GraphicControlExtension graphicControlExtension = parseGraphicControlExtension();
-                        int b = readByte();
-                        assert b == IMAGE_DESCRIPTOR_LABEL : "Graphic control extension should be followed by a graphic";
+                        int imageDescriptorLabel = readByte();
+                        assert imageDescriptorLabel == IMAGE_DESCRIPTOR_LABEL;
                         GraphicImage graphicImage = parseGraphicImage();
                         graphicImage.setGraphicControlExtension(graphicControlExtension);
                         parseResult.addGraphicImage(graphicImage);
@@ -75,7 +72,6 @@ public class GIFParser {
             } else if (blockLabel == IMAGE_DESCRIPTOR_LABEL) {
                 parseResult.addGraphicImage(parseGraphicImage());
             } else {
-                printBytes(peekNBytes(8));
                 throw new IllegalStateException("Error while parsing data blocks: " + Integer.toHexString(blockLabel));
             }
         } while (true);
@@ -150,14 +146,9 @@ public class GIFParser {
         }
     }
 
-    private CommentExtension parseCommentExtension() {
-        return null;
-    }
-
     private GraphicControlExtension parseGraphicControlExtension() {
         int blockSize = readByte();
-        assert blockSize == 4 : "Graphic control extension block size should be 4";
-
+        assert blockSize == 4;
         // <Packed Fields>  =  Reserved                      3 Bits
         //                     Disposal Method               3 Bits
         //                     User Input Flag               1 Bit
@@ -170,10 +161,8 @@ public class GIFParser {
         int delayTime = bytesToInt(readNBytes(2));
         int transparentColorIndex = readByte();
 
-        int blockTerminator = readByte();
-        if (blockTerminator != 0x00) {
-            System.out.println("Block terminator should be 0 but was " + blockTerminator);
-        }
+        // Skipping the block terminator
+        skipByte();
 
         return new GraphicControlExtension(hasTransparentColor, shouldWaitForUserInput, disposalMethod, delayTime, transparentColorIndex);
     }
@@ -184,8 +173,8 @@ public class GIFParser {
     }
 
     private ScreenDescriptor parseScreenDescriptor() {
-        int width = parseScreenWidth();
-        int height = parseScreenHeight();
+        int width = bytesToInt(readNBytes(2));
+        int height = bytesToInt(readNBytes(2));
         // <Packed Fields>  =      Global Color Table Flag       1 Bit
         //                         Color Resolution              3 Bits
         //                         Sort Flag                     1 Bit
@@ -216,12 +205,12 @@ public class GIFParser {
         return colorTable;
     }
 
-    private int parseScreenWidth() {
-        return bytesToInt(readNBytes(2));
-    }
-
-    private int parseScreenHeight() {
-        return bytesToInt(readNBytes(2));
+    private void skipByte() {
+        try {
+            reader.skipNBytes(1);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
