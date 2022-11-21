@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.BitSet;
 
 public class GifParser {
@@ -38,7 +37,7 @@ public class GifParser {
         GifParseResult parseResult = new GifParseResult(header, screenDescriptor);
 
         if (screenDescriptor.hasGlobalColorTable()) {
-            parseResult.setGlobalColorTable(parseGlobalColorTable(screenDescriptor.globalColorTableSize()));
+            parseResult.setGlobalColorTable(parseColorTable(screenDescriptor.globalColorTableSize()));
         }
 
         int label;
@@ -81,8 +80,12 @@ public class GifParser {
 
     private GraphicImage parseGraphicImage() {
         ImageDescriptor imageDescriptor = parseImageDescriptor();
+        GraphicImage graphicImage = new GraphicImage(imageDescriptor);
+        if (imageDescriptor.hasLocalColorTable()) {
+            graphicImage.setLocalColorTable(parseColorTable(imageDescriptor.localColorTableSize()));
+        }
 
-        return new GraphicImage(imageDescriptor);
+        return graphicImage;
     }
 
     private ImageDescriptor parseImageDescriptor() {
@@ -102,10 +105,6 @@ public class GifParser {
         boolean hasLocalColorTable = bits.get(7);
 
         return new ImageDescriptor(leftPosition, topPosition, width, height, hasLocalColorTable, isInterlaced, isColorsSorted, localColorTableSize);
-    }
-
-    private void parseDataBlock() {
-
     }
 
     private void parseTrailer() {
@@ -165,10 +164,6 @@ public class GifParser {
         return new GraphicControlExtension(hasTransparentColor, shouldWaitForUserInput, disposalMethod, delayTime, transparentColorIndex);
     }
 
-    private void parseGraphicBlock() {
-
-    }
-
     private GifHeader parseHeader() {
         StringBuilder header = new StringBuilder();
         for (int i = 0; i < 6; i++) {
@@ -199,9 +194,9 @@ public class GifParser {
         return new ScreenDescriptor(width, height, hasGlobalColorTable, (int) colorResolution, isColorsSorted, (int) Math.pow(2, globalColorTableSizeExponent + 1), backgroundColorIndex, aspectRatio);
     }
 
-    private ColorTable parseGlobalColorTable(int globalColorTableSize) {
-        ColorTable colorTable = new ColorTable(globalColorTableSize);
-        for (int i = 0; i < globalColorTableSize; i++) {
+    private ColorTable parseColorTable(int colorsCount) {
+        ColorTable colorTable = new ColorTable(colorsCount);
+        for (int i = 0; i < colorsCount; i++) {
             int red = readByte();
             int green = readByte();
             int blue = readByte();

@@ -5,6 +5,7 @@ import java.util.Optional;
 public class GraphicImage {
     private GraphicControlExtension graphicControlExtension;
     private final ImageDescriptor descriptor;
+    private ColorTable localColorTable;
 
     public GraphicImage(ImageDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -20,6 +21,14 @@ public class GraphicImage {
 
     public Optional<GraphicControlExtension> getGraphicControlExtension() {
         return Optional.ofNullable(graphicControlExtension);
+    }
+
+    public void setLocalColorTable(ColorTable localColorTable) {
+        this.localColorTable = localColorTable;
+    }
+
+    public Optional<ColorTable> getLocalColorTable() {
+        return Optional.ofNullable(localColorTable);
     }
 
     @Override
