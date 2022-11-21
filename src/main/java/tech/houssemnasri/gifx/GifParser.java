@@ -50,20 +50,24 @@ public class GifParser {
             if (label == EXTENSION_INTRODUCER) {
                 int extensionLabel = readByte();
                 switch (extensionLabel) {
-                    case APPLICATION_EXTENSION_LABEL -> parseResult.setApplicationExtension(parseApplicationExtension());
-                    case COMMENT_EXTENSION_LABEL -> parseResult.setCommentExtension(parseCommentExtension());
+                    case APPLICATION_EXTENSION_LABEL ->
+                            parseResult.setApplicationExtension(parseApplicationExtension());
+                    case COMMENT_EXTENSION_LABEL ->
+                            parseResult.setCommentExtension(parseCommentExtension());
                     case GRAPHIC_CONTROL_EXTENSION_LABEL -> {
                         // Parse graphic control extension
                         GraphicControlExtension graphicControlExtension = parseGraphicControlExtension();
                         // Parse graphic rendering block
-                    } case PLAIN_TEXT_EXTENSION_LABEL -> {
+                    }
+                    case PLAIN_TEXT_EXTENSION_LABEL -> {
                         throw new UnsupportedBlockException("Plain text extension is not supported");
-                    }default -> throw new UnsupportedBlockException("Unknown extension label: " + extensionLabel);
+                    }
+                    // default -> throw new UnsupportedBlockException("Unknown extension label: " + extensionLabel);
                 }
             } else if (label == IMAGE_DESCRIPTOR_LABEL) {
                 System.out.println(label + "Image Description");
             } else {
-                throw new IllegalStateException("Error while parsing data blocks: " + Integer.toHexString(label));
+                // throw new IllegalStateException("Error while parsing data blocks: " + Integer.toHexString(label));
             }
         } while (true);
 
@@ -79,7 +83,28 @@ public class GifParser {
     }
 
     private ApplicationExtension parseApplicationExtension() {
-        return null;
+        int blockSize = readByte();
+        assert blockSize == 11 : "Application extension block size should be 11";
+        String applicationId = readASCIIString(8);
+        int[] applicationAuthCode = readNBytes(3);
+
+        skipSubBlocks();
+
+        int blockTerminator = readByte();
+        if (blockTerminator != 0x00) {
+            System.out.println("Block terminator should be 0 but was " + blockTerminator);
+        }
+
+        return new ApplicationExtension(applicationId, applicationAuthCode);
+    }
+
+    /**
+     * For now, we just skip sub-blocks
+     * */
+    private void skipSubBlocks() {
+        int subBlockSize = readByte();
+        readNBytes(subBlockSize);
+        assert readByte() == 0x00 : "Sub blocks should end with 0x00";
     }
 
     private CommentExtension parseCommentExtension() {
@@ -181,6 +206,14 @@ public class GifParser {
         } catch (IOException e) {
             throw new RuntimeException("Error while reading one character", e);
         }
+    }
+
+    public String readASCIIString(int len) {
+        StringBuilder str = new StringBuilder();
+        while (str.length() < len) {
+            str.append(readASCIIChar());
+        }
+        return str.toString();
     }
 
     /**

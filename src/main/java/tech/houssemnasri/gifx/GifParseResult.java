@@ -48,6 +48,10 @@ public class GifParseResult {
             stringBuilder.append("\n");
             stringBuilder.append(globalColorTable);
         }
+        getApplicationExtension().ifPresent(app -> {
+            stringBuilder.append("\n");
+            stringBuilder.append(app);
+        });
         return stringBuilder.toString();
     }
 }

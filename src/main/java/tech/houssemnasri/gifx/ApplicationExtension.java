@@ -1,5 +1,6 @@
 package tech.houssemnasri.gifx;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -13,14 +14,14 @@ public class ApplicationExtension {
          * algorithm to compute a binary code that uniquely identifies it as the application owning
          * the Application Extension.
          * */
-        private final String applicationAuthenticationCode;
+        private final int[] applicationAuthenticationCode;
 
         SubBlocks applicationDataSubBlocks;
 
 
-    public ApplicationExtension(String applicationId, String applicationAuthenticationCode) {
+    public ApplicationExtension(String applicationId, int[] applicationAuthenticationCode) {
         assert applicationId != null && applicationId.length() == 8;
-        assert applicationAuthenticationCode != null && applicationAuthenticationCode.length() == 3;
+        assert applicationAuthenticationCode != null && applicationAuthenticationCode.length == 3;
         this.applicationId = applicationId;
         this.applicationAuthenticationCode = applicationAuthenticationCode;
     }
@@ -29,7 +30,7 @@ public class ApplicationExtension {
         return applicationId;
     }
 
-    public String getApplicationAuthenticationCode() {
+    public int[] getApplicationAuthenticationCode() {
         return applicationAuthenticationCode;
     }
 
@@ -40,5 +41,14 @@ public class ApplicationExtension {
 
     public Optional<SubBlocks> getApplicationDataSubBlocks() {
         return Optional.ofNullable(applicationDataSubBlocks);
+    }
+
+    @Override
+    public String toString() {
+        return "ApplicationExtension{" +
+                "applicationId='" + applicationId + '\'' +
+                ", applicationAuthenticationCode=" + Arrays.stream(applicationAuthenticationCode).mapToObj(i -> "0x" + Integer.toHexString(i).toUpperCase()).toList() +
+                ", applicationDataSubBlocks=" + applicationDataSubBlocks +
+                '}';
     }
 }
