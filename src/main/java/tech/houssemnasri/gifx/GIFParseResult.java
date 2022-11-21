@@ -1,5 +1,8 @@
 package tech.houssemnasri.gifx;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 public class GIFParseResult {
@@ -8,6 +11,8 @@ public class GIFParseResult {
     private ColorTable globalColorTable;
     private ApplicationExtension applicationExtension;
     private CommentExtension commentExtension;
+
+    private final List<GraphicImage> graphicImages = new ArrayList<>();
 
     public GIFParseResult(GIFHeader header, ScreenDescriptor screenDescriptor) {
         this.header = header;
@@ -36,6 +41,14 @@ public class GIFParseResult {
 
     public Optional<CommentExtension> getCommentExtension() {
         return Optional.ofNullable(commentExtension);
+    }
+
+    public void addGraphicImage(GraphicImage image) {
+        graphicImages.add(image);
+    }
+
+    public List<GraphicImage> getGraphicImages() {
+        return Collections.unmodifiableList(graphicImages);
     }
 
     @Override

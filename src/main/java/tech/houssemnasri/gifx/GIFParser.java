@@ -65,7 +65,7 @@ public class GIFParser {
                         assert b == IMAGE_DESCRIPTOR_LABEL : "Graphic control extension should be followed by a graphic";
                         GraphicImage graphicImage = parseGraphicImage();
                         graphicImage.setGraphicControlExtension(graphicControlExtension);
-                        System.out.println(graphicImage);
+                        parseResult.addGraphicImage(graphicImage);
                     }
                     case PLAIN_TEXT_EXTENSION_LABEL -> {
                         throw new UnsupportedBlockException("Plain text extension is not supported");
@@ -73,7 +73,7 @@ public class GIFParser {
                     // default -> throw new UnsupportedBlockException("Unknown extension label: " + extensionLabel);
                 }
             } else if (blockLabel == IMAGE_DESCRIPTOR_LABEL) {
-                System.out.println(blockLabel + "Image Description");
+                parseResult.addGraphicImage(parseGraphicImage());
             } else {
                 // throw new IllegalStateException("Error while parsing data blocks: " + Integer.toHexString(label));
             }
@@ -96,6 +96,7 @@ public class GIFParser {
         while (subBlockSize != 0x00) {
             int[] subBlock = readNBytes(subBlockSize);
             imageData.add(Arrays.stream(subBlock).boxed().toList());
+            printBytes(subBlock);
             subBlockSize = readByte();
         }
         graphicImage.setCompressedImageData(new LZWCompressedImageData(lzwCodeSize, imageData));
