@@ -7,6 +7,8 @@ public class GraphicImage {
     private final ImageDescriptor descriptor;
     private ColorTable localColorTable;
 
+    private LZWCompressedImageData compressedImageData;
+
     public GraphicImage(ImageDescriptor descriptor) {
         this.descriptor = descriptor;
     }
@@ -29,6 +31,14 @@ public class GraphicImage {
 
     public Optional<ColorTable> getLocalColorTable() {
         return Optional.ofNullable(localColorTable);
+    }
+
+    public void setCompressedImageData(LZWCompressedImageData compressedImageData) {
+        this.compressedImageData = compressedImageData;
+    }
+
+    public LZWCompressedImageData getCompressedImageData() {
+        return compressedImageData;
     }
 
     @Override

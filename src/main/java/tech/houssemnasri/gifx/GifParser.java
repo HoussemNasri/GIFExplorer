@@ -6,7 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
 public class GifParser {
     /**
@@ -86,6 +89,17 @@ public class GifParser {
             graphicImage.setLocalColorTable(parseColorTable(imageDescriptor.localColorTableSize()));
         }
 
+        List<List<Integer>> imageData = new ArrayList<>();
+
+        int lzwCodeSize = readByte();
+        int subBlockSize = readByte();
+        while (subBlockSize != 0x00) {
+            int[] subBlock = readNBytes(subBlockSize);
+            imageData.add(Arrays.stream(subBlock).boxed().toList());
+            subBlockSize = readByte();
+        }
+        graphicImage.setCompressedImageData(new LZWCompressedImageData(lzwCodeSize, imageData));
+
         return graphicImage;
     }
 
@@ -122,7 +136,7 @@ public class GifParser {
 
         int blockTerminator = readByte();
         if (blockTerminator != 0x00) {
-            System.out.println("Block terminator should be 0 but was " + blockTerminator);
+            System.out.println("Block terminator should be 0 but was " + "0x" + Integer.toHexString(blockTerminator));
         }
 
         return new ApplicationExtension(applicationId, applicationAuthCode);
@@ -134,7 +148,6 @@ public class GifParser {
     private void skipSubBlocks() {
         int subBlockSize = readByte();
         readNBytes(subBlockSize);
-        assert readByte() == 0x00 : "Sub blocks should end with 0x00";
     }
 
     private CommentExtension parseCommentExtension() {
