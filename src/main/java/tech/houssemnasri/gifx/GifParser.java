@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.BitSet;
 
 public class GifParser {
@@ -57,7 +58,11 @@ public class GifParser {
                     case GRAPHIC_CONTROL_EXTENSION_LABEL -> {
                         // Parse graphic control extension
                         GraphicControlExtension graphicControlExtension = parseGraphicControlExtension();
-                        // Parse graphic rendering block
+                        int b = readByte();
+                        assert b == IMAGE_DESCRIPTOR_LABEL : "Graphic control extension should be followed by a graphic";
+                        GraphicImage graphicImage = parseGraphicImage();
+                        graphicImage.setGraphicControlExtension(graphicControlExtension);
+                        System.out.println(graphicImage);
                     }
                     case PLAIN_TEXT_EXTENSION_LABEL -> {
                         throw new UnsupportedBlockException("Plain text extension is not supported");
@@ -72,6 +77,31 @@ public class GifParser {
         } while (true);
 
         return parseResult;
+    }
+
+    private GraphicImage parseGraphicImage() {
+        ImageDescriptor imageDescriptor = parseImageDescriptor();
+
+        return new GraphicImage(imageDescriptor);
+    }
+
+    private ImageDescriptor parseImageDescriptor() {
+        int leftPosition = bytesToInt(readNBytes(2));
+        int topPosition = bytesToInt(readNBytes(2));
+        int width = bytesToInt(readNBytes(2));
+        int height = bytesToInt(readNBytes(2));
+        // <Packed Fields>  = Local Color Table Flag        1 Bit
+        //                    Interlace Flag                1 Bit
+        //                    Sort Flag                     1 Bit
+        //                    Reserved                      2 Bits
+        //                    Size of Local Color Table     3 Bits
+        BitSet bits = BitSet.valueOf(new long[] {readByte()});
+        int localColorTableSize = bitSetToInt(bits.get(0, 3));
+        boolean isColorsSorted = bits.get(5);
+        boolean isInterlaced = bits.get(6);
+        boolean hasLocalColorTable = bits.get(7);
+
+        return new ImageDescriptor(leftPosition, topPosition, width, height, hasLocalColorTable, isInterlaced, isColorsSorted, localColorTableSize);
     }
 
     private void parseDataBlock() {
@@ -100,7 +130,7 @@ public class GifParser {
 
     /**
      * For now, we just skip sub-blocks
-     * */
+     */
     private void skipSubBlocks() {
         int subBlockSize = readByte();
         readNBytes(subBlockSize);
@@ -237,7 +267,10 @@ public class GifParser {
 
     public int bitSetToInt(BitSet bitSet) {
         long[] longArray = bitSet.toLongArray();
-        assert longArray.length == 1;
-        return (int) bitSet.toLongArray()[0];
+        if (longArray.length == 0) {
+            return 0;
+        } else {
+            return (int) bitSet.toLongArray()[0];
+        }
     }
 }
