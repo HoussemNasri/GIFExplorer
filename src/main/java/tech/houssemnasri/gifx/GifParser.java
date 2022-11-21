@@ -54,10 +54,11 @@ public class GifParser {
                     case COMMENT_EXTENSION_LABEL -> parseResult.setCommentExtension(parseCommentExtension());
                     case GRAPHIC_CONTROL_EXTENSION_LABEL -> {
                         // Parse graphic control extension
+                        GraphicControlExtension graphicControlExtension = parseGraphicControlExtension();
                         // Parse graphic rendering block
                     } case PLAIN_TEXT_EXTENSION_LABEL -> {
                         throw new UnsupportedBlockException("Plain text extension is not supported");
-                    }
+                    }default -> throw new UnsupportedBlockException("Unknown extension label: " + extensionLabel);
                 }
             } else if (label == IMAGE_DESCRIPTOR_LABEL) {
                 System.out.println(label + "Image Description");
@@ -85,8 +86,28 @@ public class GifParser {
         return null;
     }
 
-    private void parseGraphicControlExtension() {
+    private GraphicControlExtension parseGraphicControlExtension() {
+        int blockSize = readByte();
+        assert blockSize == 4 : "Graphic control extension block size should be 4";
 
+        // <Packed Fields>  =  Reserved                      3 Bits
+        //                     Disposal Method               3 Bits
+        //                     User Input Flag               1 Bit
+        //                     Transparent Color Flag        1 Bit
+        int packedFields = readByte();
+        BitSet bits = BitSet.valueOf(new long[] {packedFields});
+        boolean hasTransparentColor = bits.get(0);
+        boolean shouldWaitForUserInput = bits.get(1);
+        GraphicDisposalMethod disposalMethod = GraphicDisposalMethod.parse(bitSetToInt(bits.get(2, 5)));
+        int delayTime = bytesToInt(readNBytes(2));
+        int transparentColorIndex = readByte();
+
+        int blockTerminator = readByte();
+        if (blockTerminator != 0x00) {
+            System.out.println("Block terminator should be 0 but was " + blockTerminator);
+        }
+
+        return new GraphicControlExtension(hasTransparentColor, shouldWaitForUserInput, disposalMethod, delayTime, transparentColorIndex);
     }
 
     private void parseGraphicBlock() {
@@ -179,5 +200,11 @@ public class GifParser {
             result += bytes[i] << (i * 8);
         }
         return result;
+    }
+
+    public int bitSetToInt(BitSet bitSet) {
+        long[] longArray = bitSet.toLongArray();
+        assert longArray.length == 1;
+        return (int) bitSet.toLongArray()[0];
     }
 }

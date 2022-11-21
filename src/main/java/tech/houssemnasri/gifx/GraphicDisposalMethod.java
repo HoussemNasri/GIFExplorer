@@ -14,7 +14,7 @@ public enum GraphicDisposalMethod {
         this.value = value;
     }
 
-    public GraphicDisposalMethod parse(int disposalMethodValue) {
+    public static GraphicDisposalMethod parse(int disposalMethodValue) {
         return Arrays.stream(values())
                      .filter(disposalMethod -> disposalMethod.value == disposalMethodValue)
                      .findAny()
