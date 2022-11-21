@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
-public class GifParser {
+public class GIFParser {
     /**
      * Extension labels
      */
@@ -27,18 +27,18 @@ public class GifParser {
 
     private final DataInputStream reader;
 
-    public GifParser(InputStream inputStream) {
+    public GIFParser(InputStream inputStream) {
         reader = new DataInputStream(new BufferedInputStream(inputStream));
     }
 
-    public GifParser(String path) throws FileNotFoundException {
+    public GIFParser(String path) throws FileNotFoundException {
         this(new FileInputStream(path));
     }
 
-    public GifParseResult parse() {
-        GifHeader header = parseHeader();
+    public GIFParseResult parse() {
+        GIFHeader header = parseHeader();
         ScreenDescriptor screenDescriptor = parseScreenDescriptor();
-        GifParseResult parseResult = new GifParseResult(header, screenDescriptor);
+        GIFParseResult parseResult = new GIFParseResult(header, screenDescriptor);
 
         if (screenDescriptor.hasGlobalColorTable()) {
             parseResult.setGlobalColorTable(parseColorTable(screenDescriptor.globalColorTableSize()));
@@ -178,12 +178,12 @@ public class GifParser {
         return new GraphicControlExtension(hasTransparentColor, shouldWaitForUserInput, disposalMethod, delayTime, transparentColorIndex);
     }
 
-    private GifHeader parseHeader() {
+    private GIFHeader parseHeader() {
         StringBuilder header = new StringBuilder();
         for (int i = 0; i < 6; i++) {
             header.append(readASCIIChar());
         }
-        return new GifHeader(header.toString());
+        return new GIFHeader(header.toString());
     }
 
     private ScreenDescriptor parseScreenDescriptor() {

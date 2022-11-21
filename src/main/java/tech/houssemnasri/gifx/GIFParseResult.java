@@ -2,14 +2,14 @@ package tech.houssemnasri.gifx;
 
 import java.util.Optional;
 
-public class GifParseResult {
-    private final GifHeader header;
+public class GIFParseResult {
+    private final GIFHeader header;
     private final ScreenDescriptor screenDescriptor;
     private ColorTable globalColorTable;
     private ApplicationExtension applicationExtension;
     private CommentExtension commentExtension;
 
-    public GifParseResult(GifHeader header, ScreenDescriptor screenDescriptor) {
+    public GIFParseResult(GIFHeader header, ScreenDescriptor screenDescriptor) {
         this.header = header;
         this.screenDescriptor = screenDescriptor;
     }

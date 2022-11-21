@@ -1,9 +1,9 @@
 package tech.houssemnasri.gifx;
 
-public record GifHeader(
+public record GIFHeader(
         String header) {
 
-    public GifHeader {
+    public GIFHeader {
         if (!header.startsWith("GIF")) {
             throw new IllegalStateException("Cannot find the signature GIF at the beginning of the file");
         }
