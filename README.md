@@ -1,4 +1,4 @@
-# GIFx
+# GIFExplorer
 
 A tool for exploring different parts of a GIF file
 
