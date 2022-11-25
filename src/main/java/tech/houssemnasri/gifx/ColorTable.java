@@ -1,7 +1,6 @@
 package tech.houssemnasri.gifx;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 import javafx.scene.paint.Color;
 
