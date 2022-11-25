@@ -3,7 +3,7 @@ package tech.houssemnasri.gifx;
 import java.util.List;
 
 public record LZWCompressedImageData(
-        int lzwCode,
+        int lzwCodeSize,
         List<List<Integer>> data
 ) {
 
