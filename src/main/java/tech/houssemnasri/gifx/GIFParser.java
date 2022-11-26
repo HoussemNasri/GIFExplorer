@@ -97,7 +97,7 @@ public class GIFParser {
         while (subBlockSize != 0x00) {
             int[] subBlock = readNBytes(subBlockSize);
             imageData.add(Arrays.stream(subBlock).boxed().toList());
-            printBytes(subBlock);
+            // printBytes(subBlock);
             subBlockSize = readByte();
         }
         graphicImage.setCompressedImageData(new LZWCompressedImageData(lzwCodeSize, imageData));

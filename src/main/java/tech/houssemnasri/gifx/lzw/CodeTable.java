@@ -1,17 +1,22 @@
 package tech.houssemnasri.gifx.lzw;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import tech.houssemnasri.gifx.ColorTable;
 
 public class CodeTable {
     private final ColorTable colorTable;
     private final int lzwCodeSize;
 
+    private int endOfInformationCode = -1;
+
+    private int clearCode = -1;
+
     /**
      * The largest possible code size consist of 12 bits. Thus, 4095 is the largest possible code.
      */
-    private final int[] codeTable = new int[4096];
-
-    private int codeTableSize = 0;
+    private final List<List<Integer>> codeTable = new ArrayList<>(4096);
 
     public CodeTable(ColorTable colorTable, int lzwCodeSize) {
         this.colorTable = colorTable;
@@ -20,30 +25,60 @@ public class CodeTable {
     }
 
     public void reInitialize() {
-        codeTableSize = 0;
+        codeTable.clear();
         for (int colorIndex = 0; colorIndex < colorTable.getColorsCount(); colorIndex++) {
-            add(codeTableSize, colorIndex);
+            addCode(new ArrayList<>(List.of(colorIndex)));
         }
-        int clearCode = twoPowerN(lzwCodeSize);
-        add(codeTableSize, clearCode);
-        int endOfInformationCode = clearCode + 1;
-        add(codeTableSize, endOfInformationCode);
+        // Add clear code
+        clearCode = twoPowerN(lzwCodeSize);
+        addControlCode();
+        // Add end of information code
+        endOfInformationCode = clearCode + 1;
+        addControlCode();
     }
 
     private int twoPowerN(int n) {
         return 2 << (n - 1);
     }
 
-    public void add(int position, int code) {
-        codeTable[position] = code;
-        codeTableSize++;
+    public void addCode(List<Integer> codeIndices) {
+        codeTable.add(codeIndices);
     }
 
-    public int get(int index) {
-        return codeTable[index];
+    private void addControlCode() {
+        addCode(new ArrayList<>());
+    }
+
+    public List<Integer> getIndices(int code) {
+        return codeTable.get(code);
+    }
+
+    public boolean containsCode(int code) {
+        return code < getSize();
     }
 
     public int getSize() {
-        return codeTableSize;
+        return codeTable.size();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        int i = 0;
+        for (List<Integer> row : codeTable) {
+            builder.append("#%d ".formatted(i++));
+            builder.append(row);
+            builder.append("\n");
+        }
+        return builder.toString();
+    }
+
+    public boolean isEndOfInformationCode(int code) {
+        return code == endOfInformationCode;
+    }
+
+    public boolean isClearCode(int code) {
+        return code == clearCode;
     }
 }
