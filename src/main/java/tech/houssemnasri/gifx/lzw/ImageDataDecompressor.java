@@ -40,10 +40,10 @@ public class ImageDataDecompressor {
         bitSetToInt(codeStream.get(0, currentCodeSize));
         int code = bitSetToInt(codeStream.get(currentCodeSize, currentCodeSize * 2));
         int prevCode = code;
-
         for (int i = currentCodeSize * 2; i < codeStream.length(); i += currentCodeSize) {
-            System.out.println(code);
-            System.out.println(codeTable);
+            if (codeTable.getSize() == 2 << (currentCodeSize - 1)) {
+                currentCodeSize++;
+            }
             code = bitSetToInt(codeStream.get(i, i + currentCodeSize));
             if (codeTable.isEndOfInformationCode(code)) {
                 break;
@@ -58,10 +58,6 @@ public class ImageDataDecompressor {
                 List<Integer> prevCodeIndices = codeTable.getIndices(prevCode);
                 codeTable.addCode(appendElement(prevCodeIndices, k));
                 prevCode = code;
-            }
-
-            if (codeTable.getSize() == 2 << (currentCodeSize - 1)) {
-                currentCodeSize++;
             }
         }
         System.out.println(codeTable);
