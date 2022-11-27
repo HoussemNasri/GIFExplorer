@@ -3,6 +3,7 @@ package tech.houssemnasri.gifx.lzw;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.List;
 
 import tech.houssemnasri.gifx.ColorTable;
@@ -15,7 +16,6 @@ public class ImageDataDecompressor {
     private final ColorTable colorTable;
 
     public ImageDataDecompressor(Integer[] imageData, int lzwCodeSize, ImageDescriptor imageDescriptor, ColorTable colorTable) {
-        printBytes(imageData);
         this.imageData = imageData;
         this.lzwCodeSize = lzwCodeSize;
         this.imageDescriptor = imageDescriptor;
@@ -27,18 +27,15 @@ public class ImageDataDecompressor {
     }
 
     public int[][] decompress() {
-        CodeTable codeTable = generateCodeTable();
+        List<Integer> indexStream = new ArrayList<>(imageDescriptor.width() * imageDescriptor.height());
 
-        return null;
-    }
-
-    private CodeTable generateCodeTable() {
         CodeTable codeTable = new CodeTable(colorTable, lzwCodeSize);
         BitSet codeStream = getImageDataBitSet();
         int currentCodeSize = lzwCodeSize + 1;
         // Skip clear code
         bitSetToInt(codeStream.get(0, currentCodeSize));
         int code = bitSetToInt(codeStream.get(currentCodeSize, currentCodeSize * 2));
+        indexStream.addAll(codeTable.getIndices(code));
         int prevCode = code;
         System.out.println(colorTable.getColorsCount());
         System.out.println(codeTable);
@@ -51,12 +48,11 @@ public class ImageDataDecompressor {
                 shouldResetCodeSize = false;
                 prevCode = bitSetToInt(codeStream.get(i, i + currentCodeSize));
                 continue;
-            }
-            else if (codeTable.getSize() == 2 << (currentCodeSize - 1)) {
+            } else if (codeTable.getSize() == 2 << (currentCodeSize - 1)) {
                 currentCodeSize++;
             }
             // If code table is full, and we didn't get a clear code, stop loading
-            if (codeTable.getSize() == 0b1111_1111_1111) {
+            if (codeTable.getSize() == 4096) {
                 break;
             }
             code = bitSetToInt(codeStream.get(i, i + currentCodeSize));
@@ -70,19 +66,35 @@ public class ImageDataDecompressor {
                 continue;
             }
             if (codeTable.containsCode(code)) {
+                indexStream.addAll(codeTable.getIndices(code));
                 int k = codeTable.getIndices(code).get(0);
                 List<Integer> prevCodeIndices = codeTable.getIndices(prevCode);
                 codeTable.addCode(appendElement(prevCodeIndices, k));
                 prevCode = code;
             } else {
                 int k = codeTable.getIndices(prevCode).get(0);
-                List<Integer> prevCodeIndices = codeTable.getIndices(prevCode);
-                codeTable.addCode(appendElement(prevCodeIndices, k));
+                List<Integer> toAddIndices = appendElement(codeTable.getIndices(prevCode), k);
+                indexStream.addAll(toAddIndices);
+                codeTable.addCode(toAddIndices);
                 prevCode = code;
             }
         }
         System.out.println(codeTable);
-        return codeTable;
+        // System.out.println(indexStream);
+        System.out.println(indexStream.size() + " : " + imageDescriptor.height() * imageDescriptor.width());
+
+        int[][] bitmap = new int[imageDescriptor.height()][imageDescriptor.width()];
+        outer: for (int i = 0; i < imageDescriptor.height(); i++) {
+            for (int j = 0; j < imageDescriptor.width(); j++) {
+                if (i * imageDescriptor.width() + j >= indexStream.size()) {
+                    break outer;
+                }
+                int pixelColorIndex = indexStream.get(i * imageDescriptor.width() + j);
+                bitmap[i][j] = pixelColorIndex;
+            }
+        }
+
+        return bitmap;
     }
 
     private BitSet getImageDataBitSet() {
