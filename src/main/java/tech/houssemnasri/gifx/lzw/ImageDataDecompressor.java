@@ -42,20 +42,31 @@ public class ImageDataDecompressor {
         int prevCode = code;
         System.out.println(colorTable.getColorsCount());
         System.out.println(codeTable);
+
+        boolean shouldResetCodeSize = false;
+        int codeStreamCount = 2;
         for (int i = currentCodeSize * 2; i < codeStream.length(); i += currentCodeSize) {
-            if (codeTable.getSize() == 2 << (currentCodeSize - 1)) {
+            if (shouldResetCodeSize) {
+                currentCodeSize = lzwCodeSize + 1;
+                shouldResetCodeSize = false;
+                prevCode = bitSetToInt(codeStream.get(i, i + currentCodeSize));
+                continue;
+            }
+            else if (codeTable.getSize() == 2 << (currentCodeSize - 1)) {
                 currentCodeSize++;
             }
+            // If code table is full, and we didn't get a clear code, stop loading
             if (codeTable.getSize() == 0b1111_1111_1111) {
-                System.out.println("We hit the target!");
+                break;
             }
             code = bitSetToInt(codeStream.get(i, i + currentCodeSize));
-            System.out.println(code + ":" + currentCodeSize + ":" + i + ":" + codeStream.length() + ":" + codeTable.getSize());
+            System.out.println(code + ":" + currentCodeSize + ":" + i + ":" + codeStream.length() + ":" + codeStreamCount++ + ":" + codeTable.getSize());
             if (codeTable.isEndOfInformationCode(code)) {
                 break;
             } else if (codeTable.isClearCode(code)) {
                 codeTable.reInitialize();
-                currentCodeSize = lzwCodeSize + 1;
+                shouldResetCodeSize = true;
+                prevCode = -1;
                 continue;
             }
             if (codeTable.containsCode(code)) {
