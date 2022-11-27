@@ -40,13 +40,23 @@ public class ImageDataDecompressor {
         bitSetToInt(codeStream.get(0, currentCodeSize));
         int code = bitSetToInt(codeStream.get(currentCodeSize, currentCodeSize * 2));
         int prevCode = code;
+        System.out.println(colorTable.getColorsCount());
+        System.out.println(codeTable);
         for (int i = currentCodeSize * 2; i < codeStream.length(); i += currentCodeSize) {
             if (codeTable.getSize() == 2 << (currentCodeSize - 1)) {
                 currentCodeSize++;
             }
+            if (codeTable.getSize() == 0b1111_1111_1111) {
+                System.out.println("We hit the target!");
+            }
             code = bitSetToInt(codeStream.get(i, i + currentCodeSize));
+            System.out.println(code + ":" + currentCodeSize + ":" + i + ":" + codeStream.length() + ":" + codeTable.getSize());
             if (codeTable.isEndOfInformationCode(code)) {
                 break;
+            } else if (codeTable.isClearCode(code)) {
+                codeTable.reInitialize();
+                currentCodeSize = lzwCodeSize + 1;
+                continue;
             }
             if (codeTable.containsCode(code)) {
                 int k = codeTable.getIndices(code).get(0);
