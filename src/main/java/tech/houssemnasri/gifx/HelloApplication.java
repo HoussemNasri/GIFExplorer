@@ -57,6 +57,7 @@ public class HelloApplication extends Application {
 
         ColorTableViewer colorTableViewer = new ColorTableViewer(parseResult1.getGlobalColorTable().orElseThrow());
         ImageView imageView = new ImageView(writableImage);
+
         ScrollPane scrollPane = new ScrollPane(imageView);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);

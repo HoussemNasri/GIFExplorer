@@ -49,14 +49,18 @@ public class ImageDataDecompressor {
                 prevCode = bitSetToInt(codeStream.get(i, i + currentCodeSize));
                 continue;
             } else if (codeTable.getSize() == 2 << (currentCodeSize - 1)) {
-                currentCodeSize++;
-            }
-            // If code table is full, and we didn't get a clear code, stop loading
-            if (codeTable.getSize() == 4096) {
-                break;
+                if (currentCodeSize < 12) {
+                    currentCodeSize++;
+                }
             }
             code = bitSetToInt(codeStream.get(i, i + currentCodeSize));
+            // If code table is full, and we didn't get a clear code, stop loading
             System.out.println(code + ":" + currentCodeSize + ":" + i + ":" + codeStream.length() + ":" + codeStreamCount++ + ":" + codeTable.getSize());
+            if (codeTable.getSize() >= 4096) {
+                indexStream.addAll(codeTable.getIndices(code));
+                System.out.println("Code After oversize: " + code + ":" + codeTable.isClearCode(code));
+                continue;
+            }
             if (codeTable.isEndOfInformationCode(code)) {
                 break;
             } else if (codeTable.isClearCode(code)) {
@@ -79,12 +83,13 @@ public class ImageDataDecompressor {
                 prevCode = code;
             }
         }
-        System.out.println(codeTable);
+        // System.out.println(codeTable);
         // System.out.println(indexStream);
         System.out.println(indexStream.size() + " : " + imageDescriptor.height() * imageDescriptor.width());
 
         int[][] bitmap = new int[imageDescriptor.height()][imageDescriptor.width()];
-        outer: for (int i = 0; i < imageDescriptor.height(); i++) {
+        outer:
+        for (int i = 0; i < imageDescriptor.height(); i++) {
             for (int j = 0; j < imageDescriptor.width(); j++) {
                 if (i * imageDescriptor.width() + j >= indexStream.size()) {
                     break outer;
