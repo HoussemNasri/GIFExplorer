@@ -58,7 +58,6 @@ public class ImageDataDecompressor {
                 continue;
             }
             if (codeTable.getSize() >= 4096) {
-                System.out.println("End of Table: " + code);
                 // The table is full, so we can't compress anymore (group a series of colors and assign them a code)
                 // So we just output the grouped colors of the upcoming codes to the index stream.
                 indexStream.addAll(codeTable.getIndices(code));
@@ -79,7 +78,6 @@ public class ImageDataDecompressor {
                 prevCode = code;
             }
         }
-        System.out.println(codeTable);
 
         return transformIndexStreamIntoBitmap(indexStream);
     }
