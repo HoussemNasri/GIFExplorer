@@ -6,12 +6,17 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
+import tech.houssemnasri.gifx.explorer.GIFSection;
+import tech.houssemnasri.gifx.explorer.GIFSectionView;
 import tech.houssemnasri.gifx.parser.ColorTableViewer;
 import tech.houssemnasri.gifx.parser.GIFParseResult;
 import tech.houssemnasri.gifx.parser.GIFParser;
@@ -22,6 +27,7 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         AnchorPane root = new AnchorPane();
         Scene scene = new Scene(root, 1400, 600);
+        scene.getStylesheets().add(Objects.requireNonNull(HelloApplication.class.getResource("Base.css")).toExternalForm());
         stage.setTitle("Hello!");
         stage.setScene(scene);
 
@@ -56,11 +62,13 @@ public class HelloApplication extends Application {
         ColorTableViewer colorTableViewer = new ColorTableViewer(toViewImageParseResult.getGlobalColorTable().orElseThrow());
         ImageView imageView = new ImageView(writableImage);
 
-        ScrollPane scrollPane = new ScrollPane(imageView);
-        scrollPane.setFitToHeight(true);
+        GIFSectionView sectionView = new GIFSectionView(new GIFSection("Header", 5, 3, Collections.emptyMap(), Color.BURLYWOOD));
+
+        ScrollPane scrollPane = new ScrollPane(sectionView);
         scrollPane.setFitToWidth(true);
         root.getChildren().setAll(scrollPane);
         stage.show();
+
 
         AnchorPane.setBottomAnchor(scrollPane, 0d);
         AnchorPane.setTopAnchor(scrollPane, 0d);
