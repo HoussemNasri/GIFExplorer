@@ -1,4 +1,4 @@
-package tech.houssemnasri.gifx;
+package tech.houssemnasri.gifx.parser;
 
 import java.util.List;
 

@@ -3,21 +3,19 @@ package tech.houssemnasri.gifx;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.IntFunction;
 
-import tech.houssemnasri.gifx.lzw.ImageDataDecompressor;
+import tech.houssemnasri.gifx.parser.ColorTableViewer;
+import tech.houssemnasri.gifx.parser.GIFParseResult;
+import tech.houssemnasri.gifx.parser.GIFParser;
+import tech.houssemnasri.gifx.parser.lzw.ImageDataDecompressor;
 
 public class HelloApplication extends Application {
     @Override
@@ -37,7 +35,7 @@ public class HelloApplication extends Application {
         GIFParseResult parseResult3 = gifParser3.parse();
         GIFParseResult parseResult4 = gifParser4.parse();
 
-        GIFParseResult toViewImageParseResult = parseResult4;
+        GIFParseResult toViewImageParseResult = parseResult2;
 
         ImageDataDecompressor decompressor = new ImageDataDecompressor(
                 flattenList(toViewImageParseResult.getGraphicImages().get(0).getCompressedImageData().data()),

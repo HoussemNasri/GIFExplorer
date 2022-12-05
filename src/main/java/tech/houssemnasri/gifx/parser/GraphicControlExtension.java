@@ -1,4 +1,4 @@
-package tech.houssemnasri.gifx;
+package tech.houssemnasri.gifx.parser;
 
 public record GraphicControlExtension(
         /*

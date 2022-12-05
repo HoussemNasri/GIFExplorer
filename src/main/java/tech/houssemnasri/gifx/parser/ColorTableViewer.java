@@ -1,4 +1,4 @@
-package tech.houssemnasri.gifx;
+package tech.houssemnasri.gifx.parser;
 
 import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;

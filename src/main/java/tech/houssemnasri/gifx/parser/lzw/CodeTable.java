@@ -1,9 +1,9 @@
-package tech.houssemnasri.gifx.lzw;
+package tech.houssemnasri.gifx.parser.lzw;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import tech.houssemnasri.gifx.ColorTable;
+import tech.houssemnasri.gifx.parser.ColorTable;
 
 public class CodeTable {
     private final ColorTable colorTable;

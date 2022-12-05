@@ -1,4 +1,4 @@
-package tech.houssemnasri.gifx;
+package tech.houssemnasri.gifx.parser;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Optional;
 
 import static tech.houssemnasri.gifx.Utilities.bitSetToInt;
 

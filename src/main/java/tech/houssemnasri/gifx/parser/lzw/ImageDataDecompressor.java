@@ -1,11 +1,11 @@
-package tech.houssemnasri.gifx.lzw;
+package tech.houssemnasri.gifx.parser.lzw;
 
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import tech.houssemnasri.gifx.ColorTable;
-import tech.houssemnasri.gifx.ImageDescriptor;
+import tech.houssemnasri.gifx.parser.ColorTable;
+import tech.houssemnasri.gifx.parser.ImageDescriptor;
 
 import static tech.houssemnasri.gifx.Utilities.bitSetToInt;
 
