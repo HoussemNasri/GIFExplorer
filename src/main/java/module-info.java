@@ -6,4 +6,6 @@ module tech.houssemnasri.gifx {
     exports tech.houssemnasri.gifx;
     exports tech.houssemnasri.gifx.parser;
     opens tech.houssemnasri.gifx.parser to javafx.fxml;
+    exports tech.houssemnasri.gifx.utils;
+    opens tech.houssemnasri.gifx.utils to javafx.fxml;
 }

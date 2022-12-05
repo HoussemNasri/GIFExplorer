@@ -1,4 +1,4 @@
-package tech.houssemnasri.gifx;
+package tech.houssemnasri.gifx.utils;
 
 import java.util.Arrays;
 import java.util.BitSet;

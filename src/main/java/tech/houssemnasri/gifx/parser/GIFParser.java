@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
-import static tech.houssemnasri.gifx.Utilities.bitSetToInt;
+import static tech.houssemnasri.gifx.utils.Utilities.bitSetToInt;
 
 public class GIFParser {
     /**
@@ -190,10 +190,12 @@ public class GIFParser {
     private ScreenDescriptor parseScreenDescriptor() {
         int width = bytesToInt(readNBytes(2));
         int height = bytesToInt(readNBytes(2));
-        // <Packed Fields>  =      Global Color Table Flag       1 Bit
-        //                         Color Resolution              3 Bits
-        //                         Sort Flag                     1 Bit
-        //                         Size of Global Color Table    3 Bits
+        /*
+        <Packed Fields>  =       Global Color Table Flag       1 Bit
+                                 Color Resolution              3 Bits
+                                 Sort Flag                     1 Bit
+                                 Size of Global Color Table    3 Bits
+        */
         int packedFields = readByte();
 
         BitSet packedFieldsBits = BitSet.valueOf(new long[] {packedFields});

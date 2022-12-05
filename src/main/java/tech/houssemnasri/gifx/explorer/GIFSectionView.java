@@ -1,7 +1,6 @@
 package tech.houssemnasri.gifx.explorer;
 
 import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -20,11 +19,20 @@ public class GIFSectionView extends VBox {
         setHeight(USE_COMPUTED_SIZE);
 
         HBox hBox = new HBox();
+        hBox.setMaxWidth(Double.MAX_VALUE);
 
         Label sectionTitle = new Label(gifSection.getTitle());
+        sectionTitle.setMaxWidth(Double.MAX_VALUE);
         sectionTitle.getStyleClass().add("section-title");
+        HBox.setHgrow(sectionTitle, Priority.ALWAYS);
 
-        hBox.getChildren().add(sectionTitle);
+        VBox offsetVBox = new VBox(4);
+        Label offsetLabel = new Label("offset");
+        Label offsetValueLabel = new Label(String.valueOf(gifSection.getOffset()));
+        offsetVBox.getChildren().setAll(offsetLabel, offsetValueLabel);
+        HBox.setHgrow(offsetVBox, Priority.SOMETIMES);
+
+        hBox.getChildren().setAll(sectionTitle, offsetVBox);
 
         this.getChildren().add(hBox);
 

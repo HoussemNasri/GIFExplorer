@@ -7,7 +7,7 @@ import java.util.List;
 import tech.houssemnasri.gifx.parser.ColorTable;
 import tech.houssemnasri.gifx.parser.ImageDescriptor;
 
-import static tech.houssemnasri.gifx.Utilities.bitSetToInt;
+import static tech.houssemnasri.gifx.utils.Utilities.bitSetToInt;
 
 public class ImageDataDecompressor {
     private final Integer[] imageData;
