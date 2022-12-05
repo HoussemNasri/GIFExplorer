@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Optional;
 
 import static tech.houssemnasri.gifx.Utilities.bitSetToInt;
 
@@ -47,8 +48,8 @@ public class GIFParser {
         }
 
         int blockLabel;
-        do
-        {
+        GraphicControlExtension lastGraphicControlExtension = null;
+        do {
             blockLabel = readByte();
             if (blockLabel == TRAILER_LABEL) {
                 break;
@@ -60,17 +61,19 @@ public class GIFParser {
                 } else if (extensionLabel == COMMENT_EXTENSION_LABEL) {
                     skipCommentExtension();
                 } else if (extensionLabel == GRAPHIC_CONTROL_EXTENSION_LABEL) {
-                    GraphicControlExtension graphicControlExtension = parseGraphicControlExtension();
-                    int imageDescriptorLabel = readByte();
-                    assert imageDescriptorLabel == IMAGE_DESCRIPTOR_LABEL;
-                    GraphicImage graphicImage = parseGraphicImage();
-                    graphicImage.setGraphicControlExtension(graphicControlExtension);
-                    parseResult.addGraphicImage(graphicImage);
+                    // We can't add the graphic control extension yet. We need to wait until we find a graphic image.
+                    // Then we can link this graphic control extension to that image and add the image to the parse result.
+                    lastGraphicControlExtension = parseGraphicControlExtension();
                 } else {
                     throw new UnsupportedBlockException(getExtensionNameFromLabel(extensionLabel) + " is not supported");
                 }
             } else if (blockLabel == IMAGE_DESCRIPTOR_LABEL) {
-                parseResult.addGraphicImage(parseGraphicImage());
+                GraphicImage graphicImage = parseGraphicImage();
+                if (lastGraphicControlExtension != null) {
+                    graphicImage.setGraphicControlExtension(lastGraphicControlExtension);
+                    lastGraphicControlExtension = null;
+                }
+                parseResult.addGraphicImage(graphicImage);
             } else {
                 throw new IllegalStateException("Error while parsing data blocks: " + Integer.toHexString(blockLabel));
             }
@@ -81,16 +84,11 @@ public class GIFParser {
 
     private String getExtensionNameFromLabel(int extensionLabel) {
         return switch (extensionLabel) {
-            case APPLICATION_EXTENSION_LABEL ->
-                    "Application Extension";
-            case COMMENT_EXTENSION_LABEL ->
-                    "Comment Extension";
-            case GRAPHIC_CONTROL_EXTENSION_LABEL ->
-                    "Graphic Control Extension";
-            case PLAIN_TEXT_EXTENSION_LABEL ->
-                    "Plain Text Extension";
-            default ->
-                    "Unknown Extension";
+            case APPLICATION_EXTENSION_LABEL -> "Application Extension";
+            case COMMENT_EXTENSION_LABEL -> "Comment Extension";
+            case GRAPHIC_CONTROL_EXTENSION_LABEL -> "Graphic Control Extension";
+            case PLAIN_TEXT_EXTENSION_LABEL -> "Plain Text Extension";
+            default -> "Unknown Extension";
         };
     }
 

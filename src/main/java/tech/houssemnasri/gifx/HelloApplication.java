@@ -30,16 +30,18 @@ public class HelloApplication extends Application {
         GIFParser gifParser = new GIFParser(getClass().getResourceAsStream("giphy.gif"));
         GIFParser gifParser2 = new GIFParser("C:\\Users\\Houssem\\Desktop\\bell_v22.gif");
         GIFParser gifParser3 = new GIFParser(getClass().getResourceAsStream("sample_1.gif"));
+        GIFParser gifParser4 = new GIFParser("C:\\Users\\Houssem\\Desktop\\Dancing.gif");
 
         GIFParseResult parseResult1 = gifParser.parse();
         GIFParseResult parseResult2 = gifParser2.parse();
         GIFParseResult parseResult3 = gifParser3.parse();
+        GIFParseResult parseResult4 = gifParser4.parse();
 
         ImageDataDecompressor decompressor = new ImageDataDecompressor(
-                flattenList(parseResult2.getGraphicImages().get(0).getCompressedImageData().data()),
-                parseResult2.getGraphicImages().get(0).getCompressedImageData().lzwCodeSize(),
-                parseResult2.getGraphicImages().get(0).getDescriptor(),
-                parseResult2.getGlobalColorTable().get()
+                flattenList(parseResult4.getGraphicImages().get(0).getCompressedImageData().data()),
+                parseResult4.getGraphicImages().get(0).getCompressedImageData().lzwCodeSize(),
+                parseResult4.getGraphicImages().get(0).getDescriptor(),
+                parseResult4.getGlobalColorTable().get()
         );
         int[][] bitmap = decompressor.decompress();
 
@@ -47,7 +49,7 @@ public class HelloApplication extends Application {
 
         for (int y = 0; y < bitmap.length; y++) {
             for (int x = 0; x < bitmap[0].length; x++) {
-                writableImage.getPixelWriter().setColor(x, y, parseResult2.getGlobalColorTable().get().getColor(bitmap[y][x]));
+                writableImage.getPixelWriter().setColor(x, y, parseResult4.getGlobalColorTable().get().getColor(bitmap[y][x]));
             }
         }
 
