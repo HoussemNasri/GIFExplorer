@@ -1,13 +1,13 @@
 package tech.houssemnasri.gifx.lzw;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Collections;
 import java.util.List;
 
 import tech.houssemnasri.gifx.ColorTable;
 import tech.houssemnasri.gifx.ImageDescriptor;
+
+import static tech.houssemnasri.gifx.Utilities.bitSetToInt;
 
 public class ImageDataDecompressor {
     private final Integer[] imageData;
@@ -22,13 +22,8 @@ public class ImageDataDecompressor {
         this.colorTable = colorTable;
     }
 
-    public void printBytes(Integer[] bytes) {
-        System.out.println(Arrays.stream(bytes).map(b -> "0x" + Integer.toHexString(b).toUpperCase()).toList());
-    }
-
     public int[][] decompress() {
         List<Integer> indexStream = new ArrayList<>(imageDescriptor.width() * imageDescriptor.height());
-
         CodeTable codeTable = new CodeTable(colorTable, lzwCodeSize);
         BitSet codeStream = getImageDataBitSet();
         int currentCodeSize = lzwCodeSize + 1;
@@ -37,8 +32,6 @@ public class ImageDataDecompressor {
         int code = bitSetToInt(codeStream.get(currentCodeSize, currentCodeSize * 2));
         indexStream.addAll(codeTable.getIndices(code));
         int prevCode = code;
-        System.out.println(colorTable.getColorsCount());
-        System.out.println(codeTable);
 
         boolean shouldResetCodeSize = false;
         int codeStreamCount = 2;
@@ -56,11 +49,6 @@ public class ImageDataDecompressor {
             code = bitSetToInt(codeStream.get(i, i + currentCodeSize));
             // If code table is full, and we didn't get a clear code, stop loading
             System.out.println(code + ":" + currentCodeSize + ":" + i + ":" + codeStream.length() + ":" + codeStreamCount++ + ":" + codeTable.getSize());
-            if (codeTable.getSize() >= 4096) {
-                indexStream.addAll(codeTable.getIndices(code));
-                System.out.println("Code After oversize: " + code + ":" + codeTable.isClearCode(code));
-                continue;
-            }
             if (codeTable.isEndOfInformationCode(code)) {
                 break;
             } else if (codeTable.isClearCode(code)) {
@@ -69,6 +57,13 @@ public class ImageDataDecompressor {
                 prevCode = -1;
                 continue;
             }
+            if (codeTable.getSize() >= 4096) {
+                // The table is full, so we can't compress anymore (group a series of colors and assign them a code)
+                // So we just output the grouped colors of the upcoming codes to the index stream.
+                indexStream.addAll(codeTable.getIndices(code));
+                continue;
+            }
+
             if (codeTable.containsCode(code)) {
                 indexStream.addAll(codeTable.getIndices(code));
                 int k = codeTable.getIndices(code).get(0);
@@ -83,10 +78,11 @@ public class ImageDataDecompressor {
                 prevCode = code;
             }
         }
-        // System.out.println(codeTable);
-        // System.out.println(indexStream);
-        System.out.println(indexStream.size() + " : " + imageDescriptor.height() * imageDescriptor.width());
 
+        return transformIndexStreamIntoBitmap(indexStream);
+    }
+
+    private int[][] transformIndexStreamIntoBitmap(List<Integer> indexStream) {
         int[][] bitmap = new int[imageDescriptor.height()][imageDescriptor.width()];
         outer:
         for (int i = 0; i < imageDescriptor.height(); i++) {
@@ -98,7 +94,6 @@ public class ImageDataDecompressor {
                 bitmap[i][j] = pixelColorIndex;
             }
         }
-
         return bitmap;
     }
 
@@ -108,15 +103,6 @@ public class ImageDataDecompressor {
             ls[i] = imageData[i].byteValue();
         }
         return BitSet.valueOf(ls);
-    }
-
-    public int bitSetToInt(BitSet bitSet) {
-        long[] longArray = bitSet.toLongArray();
-        if (longArray.length == 0) {
-            return 0;
-        } else {
-            return (int) bitSet.toLongArray()[0];
-        }
     }
 
     private List<Integer> appendElement(List<Integer> list, Integer element) {

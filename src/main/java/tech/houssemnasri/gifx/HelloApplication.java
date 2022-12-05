@@ -36,22 +36,18 @@ public class HelloApplication extends Application {
         GIFParseResult parseResult3 = gifParser3.parse();
 
         ImageDataDecompressor decompressor = new ImageDataDecompressor(
-                flattenList(parseResult1.getGraphicImages().get(0).getCompressedImageData().data()),
-                parseResult1.getGraphicImages().get(0).getCompressedImageData().lzwCodeSize(),
-                parseResult1.getGraphicImages().get(0).getDescriptor(),
-                parseResult1.getGlobalColorTable().get()
+                flattenList(parseResult2.getGraphicImages().get(0).getCompressedImageData().data()),
+                parseResult2.getGraphicImages().get(0).getCompressedImageData().lzwCodeSize(),
+                parseResult2.getGraphicImages().get(0).getDescriptor(),
+                parseResult2.getGlobalColorTable().get()
         );
         int[][] bitmap = decompressor.decompress();
 
-        for (int[] raster : bitmap) {
-            System.out.println(Arrays.toString(raster));
-        }
-
-        WritableImage writableImage = new WritableImage(bitmap.length, bitmap[0].length);
+        WritableImage writableImage = new WritableImage(bitmap[0].length, bitmap.length);
 
         for (int y = 0; y < bitmap.length; y++) {
             for (int x = 0; x < bitmap[0].length; x++) {
-                writableImage.getPixelWriter().setColor(x, y, parseResult1.getGlobalColorTable().get().getColor(bitmap[y][x]));
+                writableImage.getPixelWriter().setColor(x, y, parseResult2.getGlobalColorTable().get().getColor(bitmap[y][x]));
             }
         }
 
@@ -79,22 +75,5 @@ public class HelloApplication extends Application {
 
     public Integer[] flattenList(List<List<Integer>> matrix) {
         return matrix.stream().flatMap(Collection::stream).toArray(Integer[]::new);
-    }
-
-    private BitSet getImageDataBitSet(Integer[] imageData) {
-        byte[] ls = new byte[imageData.length];
-        for(int i = 0; i < imageData.length; i++) {
-            ls[i] = imageData[i].byteValue();
-        }
-        return BitSet.valueOf(ls);
-    }
-
-    public int bitSetToInt(BitSet bitSet) {
-        long[] longArray = bitSet.toLongArray();
-        if (longArray.length == 0) {
-            return 0;
-        } else {
-            return (int) bitSet.toLongArray()[0];
-        }
     }
 }

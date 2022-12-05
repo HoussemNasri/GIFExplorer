@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
+import static tech.houssemnasri.gifx.Utilities.bitSetToInt;
+
 public class GIFParser {
     /**
      * Extension labels
@@ -53,21 +55,19 @@ public class GIFParser {
             }
             if (blockLabel == EXTENSION_INTRODUCER) {
                 int extensionLabel = readByte();
-                switch (extensionLabel) {
-                    case APPLICATION_EXTENSION_LABEL -> parseResult.setApplicationExtension(parseApplicationExtension());
-                    case COMMENT_EXTENSION_LABEL -> skipCommentExtension();
-                    case GRAPHIC_CONTROL_EXTENSION_LABEL -> {
-                        GraphicControlExtension graphicControlExtension = parseGraphicControlExtension();
-                        int imageDescriptorLabel = readByte();
-                        assert imageDescriptorLabel == IMAGE_DESCRIPTOR_LABEL;
-                        GraphicImage graphicImage = parseGraphicImage();
-                        graphicImage.setGraphicControlExtension(graphicControlExtension);
-                        parseResult.addGraphicImage(graphicImage);
-                    }
-                    case PLAIN_TEXT_EXTENSION_LABEL -> {
-                        throw new UnsupportedBlockException("Plain text extension is not supported");
-                    }
-                    default -> throw new UnsupportedBlockException("Unknown extension label: " + extensionLabel);
+                if (extensionLabel == APPLICATION_EXTENSION_LABEL) {
+                    parseResult.setApplicationExtension(parseApplicationExtension());
+                } else if (extensionLabel == COMMENT_EXTENSION_LABEL) {
+                    skipCommentExtension();
+                } else if (extensionLabel == GRAPHIC_CONTROL_EXTENSION_LABEL) {
+                    GraphicControlExtension graphicControlExtension = parseGraphicControlExtension();
+                    int imageDescriptorLabel = readByte();
+                    assert imageDescriptorLabel == IMAGE_DESCRIPTOR_LABEL;
+                    GraphicImage graphicImage = parseGraphicImage();
+                    graphicImage.setGraphicControlExtension(graphicControlExtension);
+                    parseResult.addGraphicImage(graphicImage);
+                } else {
+                    throw new UnsupportedBlockException(getExtensionNameFromLabel(extensionLabel) + " is not supported");
                 }
             } else if (blockLabel == IMAGE_DESCRIPTOR_LABEL) {
                 parseResult.addGraphicImage(parseGraphicImage());
@@ -77,6 +77,21 @@ public class GIFParser {
         } while (true);
 
         return parseResult;
+    }
+
+    private String getExtensionNameFromLabel(int extensionLabel) {
+        return switch (extensionLabel) {
+            case APPLICATION_EXTENSION_LABEL ->
+                    "Application Extension";
+            case COMMENT_EXTENSION_LABEL ->
+                    "Comment Extension";
+            case GRAPHIC_CONTROL_EXTENSION_LABEL ->
+                    "Graphic Control Extension";
+            case PLAIN_TEXT_EXTENSION_LABEL ->
+                    "Plain Text Extension";
+            default ->
+                    "Unknown Extension";
+        };
     }
 
     private void skipCommentExtension() {
@@ -97,7 +112,6 @@ public class GIFParser {
         while (subBlockSize != 0x00) {
             int[] subBlock = readNBytes(subBlockSize);
             imageData.add(Arrays.stream(subBlock).boxed().toList());
-            // printBytes(subBlock);
             subBlockSize = readByte();
         }
         graphicImage.setCompressedImageData(new LZWCompressedImageData(lzwCodeSize, imageData));
@@ -110,11 +124,13 @@ public class GIFParser {
         int topPosition = bytesToInt(readNBytes(2));
         int width = bytesToInt(readNBytes(2));
         int height = bytesToInt(readNBytes(2));
-        // <Packed Fields>  = Local Color Table Flag        1 Bit
-        //                    Interlace Flag                1 Bit
-        //                    Sort Flag                     1 Bit
-        //                    Reserved                      2 Bits
-        //                    Size of Local Color Table     3 Bits
+        /*
+        <Packed Fields>  = Local Color Table Flag        1 Bit
+                           Interlace Flag                1 Bit
+                           Sort Flag                     1 Bit
+                           Reserved                      2 Bits
+                           Size of Local Color Table     3 Bits
+        */
         BitSet bits = BitSet.valueOf(new long[] {readByte()});
         int localColorTableSize = bitSetToInt(bits.get(0, 3));
         boolean isColorsSorted = bits.get(5);
@@ -149,10 +165,12 @@ public class GIFParser {
     private GraphicControlExtension parseGraphicControlExtension() {
         int blockSize = readByte();
         assert blockSize == 4;
-        // <Packed Fields>  =  Reserved                      3 Bits
-        //                     Disposal Method               3 Bits
-        //                     User Input Flag               1 Bit
-        //                     Transparent Color Flag        1 Bit
+        /*
+        <Packed Fields>  =  Reserved                      3 Bits
+                            Disposal Method               3 Bits
+                            User Input Flag               1 Bit
+                            Transparent Color Flag        1 Bit
+        */
         int packedFields = readByte();
         BitSet bits = BitSet.valueOf(new long[] {packedFields});
         boolean hasTransparentColor = bits.get(0);
@@ -259,15 +277,6 @@ public class GIFParser {
         return result;
     }
 
-    public int bitSetToInt(BitSet bitSet) {
-        long[] longArray = bitSet.toLongArray();
-        if (longArray.length == 0) {
-            return 0;
-        } else {
-            return (int) bitSet.toLongArray()[0];
-        }
-    }
-
     public int peekByte() {
         try {
             reader.mark(1);
@@ -288,9 +297,5 @@ public class GIFParser {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void printBytes(int[] bytes) {
-        System.out.println(Arrays.stream(bytes).mapToObj(b -> "0x" + Integer.toHexString(b).toUpperCase()).toList());
     }
 }
