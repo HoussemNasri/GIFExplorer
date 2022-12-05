@@ -37,11 +37,13 @@ public class HelloApplication extends Application {
         GIFParseResult parseResult3 = gifParser3.parse();
         GIFParseResult parseResult4 = gifParser4.parse();
 
+        GIFParseResult toViewImageParseResult = parseResult4;
+
         ImageDataDecompressor decompressor = new ImageDataDecompressor(
-                flattenList(parseResult4.getGraphicImages().get(0).getCompressedImageData().data()),
-                parseResult4.getGraphicImages().get(0).getCompressedImageData().lzwCodeSize(),
-                parseResult4.getGraphicImages().get(0).getDescriptor(),
-                parseResult4.getGlobalColorTable().get()
+                flattenList(toViewImageParseResult.getGraphicImages().get(0).getCompressedImageData().data()),
+                toViewImageParseResult.getGraphicImages().get(0).getCompressedImageData().lzwCodeSize(),
+                toViewImageParseResult.getGraphicImages().get(0).getDescriptor(),
+                toViewImageParseResult.getGlobalColorTable().get()
         );
         int[][] bitmap = decompressor.decompress();
 
@@ -49,11 +51,11 @@ public class HelloApplication extends Application {
 
         for (int y = 0; y < bitmap.length; y++) {
             for (int x = 0; x < bitmap[0].length; x++) {
-                writableImage.getPixelWriter().setColor(x, y, parseResult4.getGlobalColorTable().get().getColor(bitmap[y][x]));
+                writableImage.getPixelWriter().setColor(x, y, toViewImageParseResult.getGlobalColorTable().get().getColor(bitmap[y][x]));
             }
         }
 
-        ColorTableViewer colorTableViewer = new ColorTableViewer(parseResult1.getGlobalColorTable().orElseThrow());
+        ColorTableViewer colorTableViewer = new ColorTableViewer(toViewImageParseResult.getGlobalColorTable().orElseThrow());
         ImageView imageView = new ImageView(writableImage);
 
         ScrollPane scrollPane = new ScrollPane(imageView);

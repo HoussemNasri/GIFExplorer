@@ -34,12 +34,12 @@ public class ImageDataDecompressor {
         int prevCode = code;
 
         boolean shouldResetCodeSize = false;
-        int codeStreamCount = 2;
         for (int i = currentCodeSize * 2; i < codeStream.length(); i += currentCodeSize) {
             if (shouldResetCodeSize) {
                 currentCodeSize = lzwCodeSize + 1;
                 shouldResetCodeSize = false;
                 prevCode = bitSetToInt(codeStream.get(i, i + currentCodeSize));
+                indexStream.addAll(codeTable.getIndices(prevCode));
                 continue;
             } else if (codeTable.getSize() == 2 << (currentCodeSize - 1)) {
                 if (currentCodeSize < 12) {
@@ -48,7 +48,7 @@ public class ImageDataDecompressor {
             }
             code = bitSetToInt(codeStream.get(i, i + currentCodeSize));
             // If code table is full, and we didn't get a clear code, stop loading
-            System.out.println(code + ":" + currentCodeSize + ":" + i + ":" + codeStream.length() + ":" + codeStreamCount++ + ":" + codeTable.getSize());
+            // System.out.println(code + ":" + currentCodeSize + ":" + i + ":" + codeStream.length() + ":" + codeStreamCount++ + ":" + codeTable.getSize());
             if (codeTable.isEndOfInformationCode(code)) {
                 break;
             } else if (codeTable.isClearCode(code)) {
@@ -58,6 +58,7 @@ public class ImageDataDecompressor {
                 continue;
             }
             if (codeTable.getSize() >= 4096) {
+                System.out.println("End of Table: " + code);
                 // The table is full, so we can't compress anymore (group a series of colors and assign them a code)
                 // So we just output the grouped colors of the upcoming codes to the index stream.
                 indexStream.addAll(codeTable.getIndices(code));
@@ -78,6 +79,7 @@ public class ImageDataDecompressor {
                 prevCode = code;
             }
         }
+        System.out.println(codeTable);
 
         return transformIndexStreamIntoBitmap(indexStream);
     }
