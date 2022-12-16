@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import tech.houssemnasri.gifx.explorer.GIFSection;
@@ -62,7 +63,7 @@ public class HelloApplication extends Application {
         ColorTableViewer colorTableViewer = new ColorTableViewer(toViewImageParseResult.getGlobalColorTable().orElseThrow());
         ImageView imageView = new ImageView(writableImage);
 
-        GIFSectionView sectionView = new GIFSectionView(new GIFSection("Header", 5, 3, Collections.emptyMap(), Color.BURLYWOOD));
+        GIFSectionView sectionView = new GIFSectionView(new GIFSection("Header", 5, 3, Map.of("Width", "500", "Height", "150px", "Background Index", "0", "Global Color Table?", "true", "Color Table Size", "7"), Color.BURLYWOOD));
 
         ScrollPane scrollPane = new ScrollPane(sectionView);
         scrollPane.setFitToWidth(true);

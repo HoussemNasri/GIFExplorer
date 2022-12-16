@@ -1,4 +1,47 @@
+* {
+    -fx-font-family: Consolas;
+    -fx-font-smoothing-type: gray;
+}
+
 .section-title {
-    -fx-font-size: 32px;
+    -fx-font-size: 36px;
     -fx-font-weight: bold;
+}
+
+.header-prop-title {
+    -fx-font-size: 14px;
+}
+
+.header-prop-value {
+    -fx-font-size: 16px;
+    -fx-font-weight: bolder;
+}
+
+.prop-name {
+    -fx-font-size: 14px;
+    -fx-font-weight: bolder;
+}
+
+.prop-value {
+    -fx-font-size: 14px;
+}
+
+.props-grid-container {
+    -fx-border-width: 0.8 0 0.8 0;
+    -fx-border-style: solid;
+    -fx-border-color: #383838;
+}
+
+.props-grid-view {
+    -fx-min-width: 500px;
+    -fx-hgap: 8;
+}
+
+.accordion .titled-pane .title {
+    -fx-background-color: #0000;
+}
+
+.titled-pane:focused > .title > .arrow-button > .arrow {
+    -fx-background-color: transparent, -fx-mark-color;
+    -fx-effect: null;
 }
