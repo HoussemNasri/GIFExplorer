@@ -14,6 +14,6 @@ public class Utilities {
     }
 
     public static void printBytes(Integer[] bytes) {
-        System.out.println(Arrays.stream(bytes).map(b -> "0x" + Integer.toHexString(b).toUpperCase()).toList());
+        System.out.println(Arrays.stream(bytes).map(b -> String.format("0x%02X", b)).toList());
     }
 }

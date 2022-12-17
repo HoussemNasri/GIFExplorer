@@ -36,12 +36,12 @@ public class HelloApplication extends Application {
         GIFParser gifParser3 = new GIFParser(getClass().getResourceAsStream("sample_1.gif"));
         GIFParser gifParser4 = new GIFParser("C:\\Users\\Houssem\\Desktop\\Dancing.gif");
 
-        GIFParseResult parseResult1 = gifParser.parse();
+   /*     GIFParseResult parseResult1 = gifParser.parse();
         GIFParseResult parseResult2 = gifParser2.parse();
-        GIFParseResult parseResult3 = gifParser3.parse();
+        GIFParseResult parseResult3 = gifParser3.parse();*/
         GIFParseResult parseResult4 = gifParser4.parse();
 
-        GIFParseResult toViewImageParseResult = parseResult1;
+        GIFParseResult toViewImageParseResult = parseResult4;
 
         ImageDataDecompressor decompressor = new ImageDataDecompressor(
                 flattenList(toViewImageParseResult.getGraphicImages().get(0).getCompressedImageData().data()),
@@ -74,9 +74,6 @@ public class HelloApplication extends Application {
         AnchorPane.setTopAnchor(scrollPane, 0d);
         AnchorPane.setLeftAnchor(scrollPane, 0d);
         AnchorPane.setRightAnchor(scrollPane, 0d);
-
-        System.out.println(parseResult1);
-        System.out.println(parseResult2);
     }
 
     public static void main(String[] args) {
