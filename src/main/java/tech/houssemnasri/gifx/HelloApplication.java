@@ -11,14 +11,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import tech.houssemnasri.gifx.explorer.GIFSection;
 import tech.houssemnasri.gifx.explorer.GIFSectionView;
-import tech.houssemnasri.gifx.parser.ColorTableViewer;
+import tech.houssemnasri.gifx.explorer.ColorTableViewer;
 import tech.houssemnasri.gifx.parser.GIFParseResult;
 import tech.houssemnasri.gifx.parser.GIFParser;
 import tech.houssemnasri.gifx.parser.lzw.ImageDataDecompressor;
@@ -42,7 +41,7 @@ public class HelloApplication extends Application {
         GIFParseResult parseResult3 = gifParser3.parse();
         GIFParseResult parseResult4 = gifParser4.parse();
 
-        GIFParseResult toViewImageParseResult = parseResult2;
+        GIFParseResult toViewImageParseResult = parseResult1;
 
         ImageDataDecompressor decompressor = new ImageDataDecompressor(
                 flattenList(toViewImageParseResult.getGraphicImages().get(0).getCompressedImageData().data()),
@@ -65,7 +64,7 @@ public class HelloApplication extends Application {
 
         GIFSectionView sectionView = new GIFSectionView(new GIFSection("Header", 5, 3, Map.of("Width", "500", "Height", "150px", "Background Index", "0", "Global Color Table?", "true", "Color Table Size", "7"), Color.BURLYWOOD));
 
-        ScrollPane scrollPane = new ScrollPane(sectionView);
+        ScrollPane scrollPane = new ScrollPane(imageView);
         scrollPane.setFitToWidth(true);
         root.getChildren().setAll(scrollPane);
         stage.show();

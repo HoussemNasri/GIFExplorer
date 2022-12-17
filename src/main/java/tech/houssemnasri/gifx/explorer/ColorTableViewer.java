@@ -1,4 +1,4 @@
-package tech.houssemnasri.gifx.parser;
+package tech.houssemnasri.gifx.explorer;
 
 import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;
@@ -9,6 +9,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+
+import tech.houssemnasri.gifx.parser.ColorTable;
 
 public class ColorTableViewer extends FlowPane {
     private final ColorTable colorTable;
