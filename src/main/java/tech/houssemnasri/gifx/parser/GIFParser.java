@@ -8,10 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.List;
 
-import static tech.houssemnasri.gifx.utils.Utilities.bitSetToInt;
+import tech.houssemnasri.gifx.utils.BitSetWrapper;
 
 public class GIFParser {
     /**
@@ -128,11 +127,11 @@ public class GIFParser {
                            Reserved                      2 Bits
                            Size of Local Color Table     3 Bits
         */
-        BitSet bits = BitSet.valueOf(new long[] {readByte()});
-        int localColorTableSize = bitSetToInt(bits.get(0, 3));
-        boolean isColorsSorted = bits.get(5);
-        boolean isInterlaced = bits.get(6);
-        boolean hasLocalColorTable = bits.get(7);
+        BitSetWrapper bits = new BitSetWrapper(readByte());
+        int localColorTableSize = bits.nextNBits(3).asInt();
+        boolean isColorsSorted = bits.next();
+        boolean isInterlaced = bits.next();
+        boolean hasLocalColorTable = bits.next();
 
         return new ImageDescriptor(leftPosition, topPosition, width, height, hasLocalColorTable, isInterlaced, isColorsSorted, localColorTableSize);
     }
@@ -168,11 +167,11 @@ public class GIFParser {
                             User Input Flag               1 Bit
                             Transparent Color Flag        1 Bit
         */
-        int packedFields = readByte();
-        BitSet bits = BitSet.valueOf(new long[] {packedFields});
-        boolean hasTransparentColor = bits.get(0);
-        boolean shouldWaitForUserInput = bits.get(1);
-        GraphicDisposalMethod disposalMethod = GraphicDisposalMethod.parse(bitSetToInt(bits.get(2, 5)));
+        BitSetWrapper bits = new BitSetWrapper(readByte());
+        boolean hasTransparentColor = bits.next();
+        boolean shouldWaitForUserInput = bits.next();
+        GraphicDisposalMethod disposalMethod = bits.nextNBits(3).asCustom(GraphicDisposalMethod::parse);
+
         int delayTime = bytesToInt(readNBytes(2));
         int transparentColorIndex = readByte();
 
@@ -196,13 +195,12 @@ public class GIFParser {
                                  Sort Flag                     1 Bit
                                  Size of Global Color Table    3 Bits
         */
-        int packedFields = readByte();
+        BitSetWrapper bits = new BitSetWrapper(readByte());
+        int globalColorTableSizeExponent = bits.nextNBits(3).asInt();
+        boolean isColorsSorted = bits.next();
+        int colorResolution = bits.nextNBits(3).asInt();
+        boolean hasGlobalColorTable = bits.next();
 
-        BitSet packedFieldsBits = BitSet.valueOf(new long[] {packedFields});
-        boolean hasGlobalColorTable = packedFieldsBits.get(7);
-        int colorResolution = bitSetToInt(packedFieldsBits.get(4, 7));
-        boolean isColorsSorted = packedFieldsBits.get(3);
-        long globalColorTableSizeExponent = bitSetToInt(packedFieldsBits.get(0, 3));
         int backgroundColorIndex = hasGlobalColorTable ? readByte() : 0;
         int pixelAspectRatio = readByte();
         int aspectRatio = pixelAspectRatio != 0 ? (pixelAspectRatio * 15) / 64 : 0;
