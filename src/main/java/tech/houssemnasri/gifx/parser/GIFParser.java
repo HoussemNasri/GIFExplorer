@@ -81,6 +81,9 @@ public class GIFParser {
         do {
             blockLabel = readByte();
             if (blockLabel == TRAILER_LABEL) {
+                if (listener != null) {
+                    listener._onTrailerParsed(new Trailer());
+                }
                 break;
             }
             if (blockLabel == EXTENSION_INTRODUCER) {
