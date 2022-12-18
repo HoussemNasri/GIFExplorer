@@ -4,12 +4,23 @@ import java.util.Arrays;
 
 import javafx.scene.paint.Color;
 
-public class ColorTable {
+public non-sealed class ColorTable implements GIFBlock {
     private Color[] colors;
     private int colorsCount = 0;
 
-    public ColorTable(int size) {
+    private final boolean isGlobal;
+
+    public ColorTable(int size, boolean isGlobal) {
         colors = new Color[size];
+        this.isGlobal = isGlobal;
+    }
+
+    public ColorTable(int size) {
+        this(size, false);
+    }
+
+    public boolean isGlobal() {
+        return isGlobal;
     }
 
     public Color getColor(int index) {
