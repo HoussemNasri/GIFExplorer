@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import tech.houssemnasri.gifx.utils.BitSetWrapper;
+import tech.houssemnasri.gifx.utils.Utilities;
 
 public class GIFParser {
     /**
@@ -28,6 +29,8 @@ public class GIFParser {
 
     private final DataInputStream reader;
 
+    private List<Integer> currentBlockBytes = new ArrayList<>();
+
     public GIFParser(InputStream inputStream) {
         reader = new DataInputStream(new BufferedInputStream(inputStream));
     }
@@ -43,6 +46,8 @@ public class GIFParser {
 
         if (screenDescriptor.hasGlobalColorTable()) {
             parseResult.setGlobalColorTable(parseColorTable(screenDescriptor.globalColorTableSize()));
+            System.out.println("Global Color Table Bytes: ");
+            Utilities.printBytes(flushCurrentBlockBytes());
         }
 
         int blockLabel;
@@ -92,6 +97,8 @@ public class GIFParser {
 
     private void skipCommentExtension() {
         skipSubBlocks();
+        System.out.println("Comment Bytes: ");
+        Utilities.printBytes(flushCurrentBlockBytes());
     }
 
     private GraphicImage parseGraphicImage() {
@@ -133,6 +140,8 @@ public class GIFParser {
         boolean isInterlaced = bits.next();
         boolean hasLocalColorTable = bits.next();
 
+        System.out.println("Image Descriptor Bytes: ");
+        Utilities.printBytes(flushCurrentBlockBytes());
         return new ImageDescriptor(leftPosition, topPosition, width, height, hasLocalColorTable, isInterlaced, isColorsSorted, localColorTableSize);
     }
 
@@ -178,11 +187,16 @@ public class GIFParser {
         // Skipping the block terminator
         skipByte();
 
+        System.out.println("Graphic Control Extension Bytes: ");
+        Utilities.printBytes(flushCurrentBlockBytes());
+
         return new GraphicControlExtension(hasTransparentColor, shouldWaitForUserInput, disposalMethod, delayTime, transparentColorIndex);
     }
 
     private GIFHeader parseHeader() {
         String header = readASCIIString(6);
+        System.out.println("Header Bytes: ");
+        Utilities.printBytes(flushCurrentBlockBytes());
         return new GIFHeader(header);
     }
 
@@ -204,7 +218,8 @@ public class GIFParser {
         int backgroundColorIndex = hasGlobalColorTable ? readByte() : 0;
         int pixelAspectRatio = readByte();
         int aspectRatio = pixelAspectRatio != 0 ? (pixelAspectRatio * 15) / 64 : 0;
-
+        System.out.println("Screen Descriptor Bytes: ");
+        Utilities.printBytes(flushCurrentBlockBytes());
         return new ScreenDescriptor(width, height, hasGlobalColorTable, colorResolution, isColorsSorted, (int) Math.pow(2, globalColorTableSizeExponent + 1), backgroundColorIndex, aspectRatio);
     }
 
@@ -222,9 +237,9 @@ public class GIFParser {
 
     private void skipByte() {
         try {
-            reader.skipNBytes(1);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            readByte();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error while skipping one byte", e);
         }
     }
 
@@ -233,7 +248,9 @@ public class GIFParser {
      */
     public int readByte() throws RuntimeException {
         try {
-            return reader.readUnsignedByte();
+            int b = reader.readUnsignedByte();
+            currentBlockBytes.add(b);
+            return b;
         } catch (IOException e) {
             throw new RuntimeException("Error while reading one byte", e);
         }
@@ -241,8 +258,8 @@ public class GIFParser {
 
     public char readASCIIChar() {
         try {
-            return (char) reader.read();
-        } catch (IOException e) {
+            return (char) readByte();
+        } catch (RuntimeException e) {
             throw new RuntimeException("Error while reading one character", e);
         }
     }
@@ -274,25 +291,9 @@ public class GIFParser {
         return result;
     }
 
-    public int peekByte() {
-        try {
-            reader.mark(1);
-            int oneByte = readByte();
-            reader.reset();
-            return oneByte;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public int[] peekNBytes(int n) {
-        try {
-            reader.mark(n);
-            int[] bytes = readNBytes(n);
-            reader.reset();
-            return bytes;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Integer[] flushCurrentBlockBytes() {
+        var blockBytes = currentBlockBytes.toArray(Integer[]::new);
+        currentBlockBytes.clear();
+        return blockBytes;
     }
 }
