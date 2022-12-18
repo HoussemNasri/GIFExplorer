@@ -18,6 +18,7 @@ import java.util.Objects;
 import tech.houssemnasri.gifx.explorer.GIFSection;
 import tech.houssemnasri.gifx.explorer.GIFSectionView;
 import tech.houssemnasri.gifx.explorer.ColorTableViewer;
+import tech.houssemnasri.gifx.explorer.DebugGIFParserListener;
 import tech.houssemnasri.gifx.parser.GIFParseResult;
 import tech.houssemnasri.gifx.parser.GIFParser;
 import tech.houssemnasri.gifx.parser.lzw.ImageDataDecompressor;
@@ -39,6 +40,8 @@ public class HelloApplication extends Application {
    /*     GIFParseResult parseResult1 = gifParser.parse();
         GIFParseResult parseResult2 = gifParser2.parse();
         GIFParseResult parseResult3 = gifParser3.parse();*/
+        gifParser3.setParserListener(new DebugGIFParserListener());
+        gifParser3.parse();
         GIFParseResult parseResult4 = gifParser4.parse();
 
         GIFParseResult toViewImageParseResult = parseResult4;
