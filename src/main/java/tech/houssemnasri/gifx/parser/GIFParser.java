@@ -277,11 +277,11 @@ public class GIFParser {
     }
 
     private ColorTable parseGlobalColorTable(int colorsCount) {
-        return parseColorTable(colorsCount, false);
+        return parseColorTable(colorsCount, true);
     }
 
     private ColorTable parseLocalColorTable(int colorsCount) {
-        return parseColorTable(colorsCount, true);
+        return parseColorTable(colorsCount, false);
     }
 
     private void skipByte() {
