@@ -1,4 +1,4 @@
 package tech.houssemnasri.gifx.parser;
 
-public class CommentExtension {
+public non-sealed class CommentExtension implements GIFBlock {
 }

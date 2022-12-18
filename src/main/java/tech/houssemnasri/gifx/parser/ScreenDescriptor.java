@@ -9,6 +9,6 @@ public record ScreenDescriptor(
         int globalColorTableSize,
         int backgroundColorIndex,
         int aspectRatio
-) {
+) implements GIFBlock {
 
 }

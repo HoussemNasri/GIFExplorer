@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import javafx.scene.paint.Color;
 
-public non-sealed class ColorTable implements GIFBlock {
+public final class ColorTable implements GIFBlock {
     private Color[] colors;
     private int colorsCount = 0;
 

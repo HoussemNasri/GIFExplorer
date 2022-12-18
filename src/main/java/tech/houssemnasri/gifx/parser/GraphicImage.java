@@ -2,7 +2,7 @@ package tech.houssemnasri.gifx.parser;
 
 import java.util.Optional;
 
-public class GraphicImage {
+public final class GraphicImage implements GIFBlock {
     private GraphicControlExtension graphicControlExtension;
     private final ImageDescriptor descriptor;
     private ColorTable localColorTable;

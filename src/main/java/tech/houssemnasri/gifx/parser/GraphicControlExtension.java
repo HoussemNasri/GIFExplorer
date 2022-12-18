@@ -23,5 +23,5 @@ public record GraphicControlExtension(
           present if and only if hasTransparentColor is set to true.
          */
         int transparencyIndex
-) {
+) implements GIFBlock {
 }

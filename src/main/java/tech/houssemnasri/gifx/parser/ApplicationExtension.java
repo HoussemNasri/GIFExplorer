@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ApplicationExtension {
+public final class ApplicationExtension implements GIFBlock {
         /*
          * Sequence of eight printable ASCII characters used to identify the application owning the Application Extension.
          * */

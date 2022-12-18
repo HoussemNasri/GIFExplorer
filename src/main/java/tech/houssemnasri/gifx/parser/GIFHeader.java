@@ -1,7 +1,7 @@
 package tech.houssemnasri.gifx.parser;
 
 public record GIFHeader(
-        String header) {
+        String header) implements GIFBlock {
 
     public GIFHeader {
         if (!header.startsWith("GIF")) {
