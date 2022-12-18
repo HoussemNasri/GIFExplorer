@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import tech.houssemnasri.gifx.utils.BitSetWrapper;
-import tech.houssemnasri.gifx.utils.Utilities;
 
 public class GIFParser {
     /**
@@ -31,6 +30,8 @@ public class GIFParser {
 
     private List<Integer> currentBlockBytes = new ArrayList<>();
 
+    private GIFParserListener listener;
+
     public GIFParser(InputStream inputStream) {
         reader = new DataInputStream(new BufferedInputStream(inputStream));
     }
@@ -39,15 +40,40 @@ public class GIFParser {
         this(new FileInputStream(path));
     }
 
+    public void setParserListener(GIFParserListener listener) {
+        this.listener = listener;
+    }
+
+    private <T extends GIFBlock> T notifyListenerAndGetParsedBlock(T block) {
+        if (listener != null) {
+            switch (block) {
+                case GIFHeader header-> listener._onHeaderParsed(header, getCurrentBlockBytes());
+                case ScreenDescriptor screenDescriptor-> listener._onScreenDescriptorParsed(screenDescriptor, getCurrentBlockBytes());
+                case ColorTable colorTable -> {
+                    if (colorTable.isGlobal()) {
+                        listener._onGlobalColorTableParsed(colorTable, getCurrentBlockBytes());
+                    } else {
+                        listener._onLocalColorTableParsed(colorTable, getCurrentBlockBytes());
+                    }
+                }
+                case ImageDescriptor imageDescriptor -> listener._onImageDescriptorParsed(imageDescriptor, getCurrentBlockBytes());
+                case GraphicControlExtension gcExtension-> listener._onGraphicControlExtensionParsed(gcExtension, getCurrentBlockBytes());
+                case GraphicImage graphicImage -> listener._onImageDataParsed(graphicImage, getCurrentBlockBytes());
+                case ApplicationExtension appExtension -> listener._onApplicationExtensionParsed(appExtension, getCurrentBlockBytes());
+                case CommentExtension commentExtension -> listener._onCommentExtensionParsed(commentExtension, getCurrentBlockBytes());
+                case Trailer trailer -> listener._onTrailerParsed(trailer);
+            }
+        }
+        return block;
+    }
+
     public GIFParseResult parse() {
         GIFHeader header = parseHeader();
         ScreenDescriptor screenDescriptor = parseScreenDescriptor();
         GIFParseResult parseResult = new GIFParseResult(header, screenDescriptor);
 
         if (screenDescriptor.hasGlobalColorTable()) {
-            parseResult.setGlobalColorTable(parseColorTable(screenDescriptor.globalColorTableSize()));
-            System.out.println("Global Color Table Bytes: ");
-            Utilities.printBytes(flushCurrentBlockBytes());
+            parseResult.setGlobalColorTable(parseGlobalColorTable(screenDescriptor.globalColorTableSize()));
         }
 
         int blockLabel;
@@ -97,15 +123,15 @@ public class GIFParser {
 
     private void skipCommentExtension() {
         skipSubBlocks();
-        System.out.println("Comment Bytes: ");
-        Utilities.printBytes(flushCurrentBlockBytes());
+        // TODO: Support comment extension block
+        notifyListenerAndGetParsedBlock(new CommentExtension());
     }
 
     private GraphicImage parseGraphicImage() {
         ImageDescriptor imageDescriptor = parseImageDescriptor();
         GraphicImage graphicImage = new GraphicImage(imageDescriptor);
         if (imageDescriptor.hasLocalColorTable()) {
-            graphicImage.setLocalColorTable(parseColorTable(imageDescriptor.localColorTableSize()));
+            graphicImage.setLocalColorTable(parseLocalColorTable(imageDescriptor.localColorTableSize()));
         }
 
         List<List<Integer>> imageData = new ArrayList<>();
@@ -119,7 +145,7 @@ public class GIFParser {
         }
         graphicImage.setCompressedImageData(new LZWCompressedImageData(lzwCodeSize, imageData));
 
-        return graphicImage;
+        return notifyListenerAndGetParsedBlock(graphicImage);
     }
 
     private ImageDescriptor parseImageDescriptor() {
@@ -140,9 +166,16 @@ public class GIFParser {
         boolean isInterlaced = bits.next();
         boolean hasLocalColorTable = bits.next();
 
-        System.out.println("Image Descriptor Bytes: ");
-        Utilities.printBytes(flushCurrentBlockBytes());
-        return new ImageDescriptor(leftPosition, topPosition, width, height, hasLocalColorTable, isInterlaced, isColorsSorted, localColorTableSize);
+        return notifyListenerAndGetParsedBlock(
+                new ImageDescriptor(leftPosition,
+                        topPosition,
+                        width,
+                        height,
+                        hasLocalColorTable,
+                        isInterlaced,
+                        isColorsSorted,
+                        localColorTableSize)
+        );
     }
 
     private ApplicationExtension parseApplicationExtension() {
@@ -153,7 +186,7 @@ public class GIFParser {
 
         skipSubBlocks();
 
-        return new ApplicationExtension(applicationId, applicationAuthCode);
+        return notifyListenerAndGetParsedBlock(new ApplicationExtension(applicationId, applicationAuthCode));
     }
 
     /**
@@ -187,17 +220,18 @@ public class GIFParser {
         // Skipping the block terminator
         skipByte();
 
-        System.out.println("Graphic Control Extension Bytes: ");
-        Utilities.printBytes(flushCurrentBlockBytes());
-
-        return new GraphicControlExtension(hasTransparentColor, shouldWaitForUserInput, disposalMethod, delayTime, transparentColorIndex);
+        return notifyListenerAndGetParsedBlock(
+                new GraphicControlExtension(hasTransparentColor,
+                        shouldWaitForUserInput,
+                        disposalMethod,
+                        delayTime,
+                        transparentColorIndex)
+        );
     }
 
     private GIFHeader parseHeader() {
         String header = readASCIIString(6);
-        System.out.println("Header Bytes: ");
-        Utilities.printBytes(flushCurrentBlockBytes());
-        return new GIFHeader(header);
+        return notifyListenerAndGetParsedBlock(new GIFHeader(header));
     }
 
     private ScreenDescriptor parseScreenDescriptor() {
@@ -218,13 +252,20 @@ public class GIFParser {
         int backgroundColorIndex = hasGlobalColorTable ? readByte() : 0;
         int pixelAspectRatio = readByte();
         int aspectRatio = pixelAspectRatio != 0 ? (pixelAspectRatio * 15) / 64 : 0;
-        System.out.println("Screen Descriptor Bytes: ");
-        Utilities.printBytes(flushCurrentBlockBytes());
-        return new ScreenDescriptor(width, height, hasGlobalColorTable, colorResolution, isColorsSorted, (int) Math.pow(2, globalColorTableSizeExponent + 1), backgroundColorIndex, aspectRatio);
+        return notifyListenerAndGetParsedBlock(
+                new ScreenDescriptor(width,
+                        height,
+                        hasGlobalColorTable,
+                        colorResolution,
+                        isColorsSorted,
+                        (int) Math.pow(2, globalColorTableSizeExponent + 1),
+                        backgroundColorIndex,
+                        aspectRatio)
+        );
     }
 
-    private ColorTable parseColorTable(int colorsCount) {
-        ColorTable colorTable = new ColorTable(colorsCount);
+    private ColorTable parseColorTable(int colorsCount, boolean isGlobal) {
+        ColorTable colorTable = new ColorTable(colorsCount, isGlobal);
         for (int i = 0; i < colorsCount; i++) {
             int red = readByte();
             int green = readByte();
@@ -232,7 +273,15 @@ public class GIFParser {
             colorTable.addColor(red, green, blue);
         }
 
-        return colorTable;
+        return notifyListenerAndGetParsedBlock(colorTable);
+    }
+
+    private ColorTable parseGlobalColorTable(int colorsCount) {
+        return parseColorTable(colorsCount, false);
+    }
+
+    private ColorTable parseLocalColorTable(int colorsCount) {
+        return parseColorTable(colorsCount, true);
     }
 
     private void skipByte() {
@@ -291,7 +340,7 @@ public class GIFParser {
         return result;
     }
 
-    public Integer[] flushCurrentBlockBytes() {
+    public Integer[] getCurrentBlockBytes() {
         var blockBytes = currentBlockBytes.toArray(Integer[]::new);
         currentBlockBytes.clear();
         return blockBytes;
