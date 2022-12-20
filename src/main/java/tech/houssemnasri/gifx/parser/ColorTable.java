@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 
 public final class ColorTable implements GIFBlock {
     private Color[] colors;
-    private int colorsCount = 0;
+    private Integer colorsCount = 0;
 
     private final boolean isGlobal;
 
@@ -32,7 +32,7 @@ public final class ColorTable implements GIFBlock {
         colors[colorsCount++] = Color.rgb(red, green, blue);
     }
 
-    public int getColorsCount() {
+    public Integer getColorsCount() {
         return colorsCount;
     }
 

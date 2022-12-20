@@ -1,13 +1,13 @@
 package tech.houssemnasri.gifx.parser;
 
 public record ImageDescriptor(
-        int leftPosition,
-        int topPosition,
-        int width,
-        int height,
+        Integer leftPosition,
+        Integer topPosition,
+        Integer width,
+        Integer height,
         boolean hasLocalColorTable,
         boolean isInterlaced,
         boolean isColorsSorted,
-        int localColorTableSize
+        Integer localColorTableSize
 ) implements GIFBlock {
 }

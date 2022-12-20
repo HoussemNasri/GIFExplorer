@@ -1,14 +1,14 @@
 package tech.houssemnasri.gifx.parser;
 
 public record ScreenDescriptor(
-        int width,
-        int height,
+        Integer width,
+        Integer height,
         boolean hasGlobalColorTable,
-        int colorResolution,
+        Integer colorResolution,
         boolean isColorsSorted,
-        int globalColorTableSize,
-        int backgroundColorIndex,
-        int aspectRatio
+        Integer globalColorTableSize,
+        Integer backgroundColorIndex,
+        Integer aspectRatio
 ) implements GIFBlock {
 
 }
