@@ -18,10 +18,10 @@ public class GIFSection {
     private final Integer[] bytes;
     private javafx.scene.Node sectionPreview;
 
-    public GIFSection(String title, int offset, int length, Map<String, String> properties, Color color, Integer[] bytes) {
+    public GIFSection(String title, int offset, Map<String, String> properties, Color color, Integer[] bytes) {
         this.title = title;
         this.offset = offset;
-        this.length = length;
+        this.length = bytes.length;
         this.color = color;
         this.bytes = bytes;
         this.properties.putAll(properties);
