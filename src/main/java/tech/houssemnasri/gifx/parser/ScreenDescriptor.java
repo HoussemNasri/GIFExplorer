@@ -3,9 +3,9 @@ package tech.houssemnasri.gifx.parser;
 public record ScreenDescriptor(
         Integer width,
         Integer height,
-        boolean hasGlobalColorTable,
+        Boolean hasGlobalColorTable,
         Integer colorResolution,
-        boolean isColorsSorted,
+        Boolean isColorsSorted,
         Integer globalColorTableSize,
         Integer backgroundColorIndex,
         Integer aspectRatio
