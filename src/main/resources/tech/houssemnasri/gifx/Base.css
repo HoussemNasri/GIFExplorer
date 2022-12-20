@@ -2,8 +2,12 @@
     -fx-font-family: Consolas;
     -fx-font-smoothing-type: gray;
 }
+.scroll-pane {
+    -fx-background-color: #fff;
+}
 
 .section-title {
+    -fx-translate-x: 12;
     -fx-font-size: 36px;
     -fx-font-weight: bold;
 }
@@ -13,7 +17,7 @@
 }
 
 .header-prop-value {
-    -fx-font-size: 16px;
+    -fx-font-size: 24px;
     -fx-font-weight: bolder;
 }
 
