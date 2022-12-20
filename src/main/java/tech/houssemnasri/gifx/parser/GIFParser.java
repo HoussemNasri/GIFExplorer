@@ -47,21 +47,21 @@ public class GIFParser {
     private <T extends GIFBlock> T notifyListenerAndGetParsedBlock(T block) {
         if (listener != null) {
             switch (block) {
-                case GIFHeader header-> listener._onHeaderParsed(header, getCurrentBlockBytes());
-                case ScreenDescriptor screenDescriptor-> listener._onScreenDescriptorParsed(screenDescriptor, getCurrentBlockBytes());
+                case GIFHeader header-> listener.onHeaderParsed(header, getCurrentBlockBytes());
+                case ScreenDescriptor screenDescriptor-> listener.onScreenDescriptorParsed(screenDescriptor, getCurrentBlockBytes());
                 case ColorTable colorTable -> {
                     if (colorTable.isGlobal()) {
-                        listener._onGlobalColorTableParsed(colorTable, getCurrentBlockBytes());
+                        listener.onGlobalColorTableParsed(colorTable, getCurrentBlockBytes());
                     } else {
-                        listener._onLocalColorTableParsed(colorTable, getCurrentBlockBytes());
+                        listener.onLocalColorTableParsed(colorTable, getCurrentBlockBytes());
                     }
                 }
-                case ImageDescriptor imageDescriptor -> listener._onImageDescriptorParsed(imageDescriptor, getCurrentBlockBytes());
-                case GraphicControlExtension gcExtension-> listener._onGraphicControlExtensionParsed(gcExtension, getCurrentBlockBytes());
-                case GraphicImage graphicImage -> listener._onImageDataParsed(graphicImage, getCurrentBlockBytes());
-                case ApplicationExtension appExtension -> listener._onApplicationExtensionParsed(appExtension, getCurrentBlockBytes());
-                case CommentExtension commentExtension -> listener._onCommentExtensionParsed(commentExtension, getCurrentBlockBytes());
-                case Trailer trailer -> listener._onTrailerParsed(trailer);
+                case ImageDescriptor imageDescriptor -> listener.onImageDescriptorParsed(imageDescriptor, getCurrentBlockBytes());
+                case GraphicControlExtension gcExtension-> listener.onGraphicControlExtensionParsed(gcExtension, getCurrentBlockBytes());
+                case GraphicImage graphicImage -> listener.onImageDataParsed(graphicImage, getCurrentBlockBytes());
+                case ApplicationExtension appExtension -> listener.onApplicationExtensionParsed(appExtension, getCurrentBlockBytes());
+                case CommentExtension commentExtension -> listener.onCommentExtensionParsed(commentExtension, getCurrentBlockBytes());
+                case Trailer trailer -> listener.onTrailerParsed(trailer);
             }
         }
         return block;
@@ -82,7 +82,7 @@ public class GIFParser {
             blockLabel = readByte();
             if (blockLabel == TRAILER_LABEL) {
                 if (listener != null) {
-                    listener._onTrailerParsed(new Trailer());
+                    listener.onTrailerParsed(new Trailer());
                 }
                 break;
             }

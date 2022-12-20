@@ -16,63 +16,63 @@ import static tech.houssemnasri.gifx.utils.Utilities.*;
 /**
  * A simple {@link GIFParserListener} that prints the bytes of each block for debugging purposes
  */
-public class DebugGIFParserListener extends GIFParserListener {
+public class DebugGIFParserListener implements GIFParserListener {
     @Override
-    protected void onHeaderParsed(GIFHeader header, Integer[] bytes) {
+    public void onHeaderParsed(GIFHeader header, Integer[] bytes) {
         System.out.println("Header Block");
         printBytes(bytes);
     }
 
     @Override
-    protected void onScreenDescriptorParsed(ScreenDescriptor screenDescriptor, Integer[] bytes) {
+    public void onScreenDescriptorParsed(ScreenDescriptor screenDescriptor, Integer[] bytes) {
         System.out.println("Screen Descriptor Block:");
         printBytes(bytes);
     }
 
     @Override
-    protected void onGlobalColorTableParsed(ColorTable globalColorTable, Integer[] bytes) {
+    public void onGlobalColorTableParsed(ColorTable globalColorTable, Integer[] bytes) {
         System.out.println("Global Color Table Block:");
         printBytes(bytes);
     }
 
     @Override
-    protected void onApplicationExtensionParsed(ApplicationExtension appExtension, Integer[] bytes) {
+    public void onApplicationExtensionParsed(ApplicationExtension appExtension, Integer[] bytes) {
         System.out.println("Application Extension Block:");
         printBytes(bytes);
     }
 
     @Override
-    protected void onCommentExtensionParsed(CommentExtension commentExtension, Integer[] bytes) {
+    public void onCommentExtensionParsed(CommentExtension commentExtension, Integer[] bytes) {
         System.out.println("Comment Extension Block:");
         printBytes(bytes);
     }
 
     @Override
-    protected void onImageDescriptorParsed(ImageDescriptor imageDescriptor, Integer[] bytes) {
+    public void onImageDescriptorParsed(ImageDescriptor imageDescriptor, Integer[] bytes) {
         System.out.println("Image Description Block:");
         printBytes(bytes);
     }
 
     @Override
-    protected void onGraphicControlExtensionParsed(GraphicControlExtension gcExtension, Integer[] bytes) {
+    public void onGraphicControlExtensionParsed(GraphicControlExtension gcExtension, Integer[] bytes) {
         System.out.println("Graphic Control Extension Block:");
         printBytes(bytes);
     }
 
     @Override
-    protected void onLocalColorTableParsed(ColorTable localColorTable, Integer[] bytes) {
+    public void onLocalColorTableParsed(ColorTable localColorTable, Integer[] bytes) {
         System.out.println("Local Color Table Block:");
         printBytes(bytes);
     }
 
     @Override
-    protected void onImageDataParsed(GraphicImage graphicImage, Integer[] bytes) {
+    public void onImageDataParsed(GraphicImage graphicImage, Integer[] bytes) {
         System.out.println("Image Data Block:");
         printBytes(bytes);
     }
 
     @Override
-    protected void onTrailerParsed(Trailer trailer) {
+    public void onTrailerParsed(Trailer trailer) {
         System.out.println("Trailer Block:");
         printBytes(new Integer[] {trailer.getValue()});
     }
