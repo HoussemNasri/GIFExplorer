@@ -10,11 +10,13 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import tech.houssemnasri.gifx.explorer.GIFExplorer;
 import tech.houssemnasri.gifx.explorer.GIFSection;
 import tech.houssemnasri.gifx.explorer.GIFSectionView;
 import tech.houssemnasri.gifx.explorer.ColorTableViewer;
@@ -37,14 +39,14 @@ public class HelloApplication extends Application {
         GIFParser gifParser3 = new GIFParser(getClass().getResourceAsStream("sample_1.gif"));
         GIFParser gifParser4 = new GIFParser("C:\\Users\\Houssem\\Desktop\\Dancing.gif");
 
-   /*     GIFParseResult parseResult1 = gifParser.parse();
-        GIFParseResult parseResult2 = gifParser2.parse();
-        GIFParseResult parseResult3 = gifParser3.parse();*/
         gifParser3.setParserListener(new DebugGIFParserListener());
-        gifParser3.parse();
-        GIFParseResult parseResult4 = gifParser4.parse();
+        GIFParseResult parseResult1 = gifParser.parse();
+        GIFParseResult parseResult2 = gifParser2.parse();
+        GIFParseResult parseResult3 = gifParser3.parse();
 
-        GIFParseResult toViewImageParseResult = parseResult4;
+        // GIFParseResult parseResult4 = gifParser4.parse();
+
+        GIFParseResult toViewImageParseResult = parseResult3;
 
         ImageDataDecompressor decompressor = new ImageDataDecompressor(
                 flattenList(toViewImageParseResult.getGraphicImages().get(0).getCompressedImageData().data()),
@@ -64,11 +66,13 @@ public class HelloApplication extends Application {
 
         ColorTableViewer colorTableViewer = new ColorTableViewer(toViewImageParseResult.getGlobalColorTable().orElseThrow());
         ImageView imageView = new ImageView(writableImage);
+        var section = new GIFSection("Header", 5, Map.of("Width", "500", "Height", "150px", "Background Index", "0", "Global Color Table?", "true", "Color Table Size", "7"), Color.BURLYWOOD, new Integer[]{0x22, 0xEA, 0xFF});
+        section.setPreview(imageView);
+        GIFSectionView sectionView = new GIFSectionView(section);
 
-        GIFSectionView sectionView = new GIFSectionView(new GIFSection("Header", 5, 3, Map.of("Width", "500", "Height", "150px", "Background Index", "0", "Global Color Table?", "true", "Color Table Size", "7"), Color.BURLYWOOD));
+        // ScrollPane scrollPane = new ScrollPane(sectionView);
+        ScrollPane scrollPane = new GIFExplorer(Path.of("C:\\Users\\Houssem\\Desktop\\Dancing.gif"));
 
-        ScrollPane scrollPane = new ScrollPane(imageView);
-        scrollPane.setFitToWidth(true);
         root.getChildren().setAll(scrollPane);
         stage.show();
 
