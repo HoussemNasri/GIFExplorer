@@ -11,12 +11,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
+import javafx.scene.Node;
 
 public class GIFSectionView extends VBox {
     private final GIFSection gifSection;
@@ -33,7 +35,14 @@ public class GIFSectionView extends VBox {
         if (gifSection.hasProperties()) {
             this.getChildren().add(createSectionPropsView());
         }
+        gifSection.getPreview().ifPresent(preview -> this.getChildren().add(createPreviewPane(preview)));
         this.getChildren().add(createActionBar());
+    }
+
+    private BorderPane createPreviewPane(Node preview) {
+        BorderPane pane = new BorderPane(preview);
+        pane.setPadding(new Insets(16));
+        return pane;
     }
 
     private Accordion createActionBar() {
