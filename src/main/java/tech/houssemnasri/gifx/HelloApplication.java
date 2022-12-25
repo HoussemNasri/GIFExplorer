@@ -51,8 +51,7 @@ public class HelloApplication extends Application {
         ImageDataDecompressor decompressor = new ImageDataDecompressor(
                 flattenList(toViewImageParseResult.getGraphicImages().get(0).getCompressedImageData().data()),
                 toViewImageParseResult.getGraphicImages().get(0).getCompressedImageData().lzwCodeSize(),
-                toViewImageParseResult.getGraphicImages().get(0).getDescriptor(),
-                toViewImageParseResult.getGlobalColorTable().get()
+                toViewImageParseResult.getGraphicImages().get(0).getDescriptor()
         );
         int[][] bitmap = decompressor.decompress();
 

@@ -13,18 +13,16 @@ public class ImageDataDecompressor {
     private final Integer[] imageData;
     private final int lzwCodeSize;
     private final ImageDescriptor imageDescriptor;
-    private final ColorTable colorTable;
 
-    public ImageDataDecompressor(Integer[] imageData, int lzwCodeSize, ImageDescriptor imageDescriptor, ColorTable colorTable) {
+    public ImageDataDecompressor(Integer[] imageData, int lzwCodeSize, ImageDescriptor imageDescriptor) {
         this.imageData = imageData;
         this.lzwCodeSize = lzwCodeSize;
         this.imageDescriptor = imageDescriptor;
-        this.colorTable = colorTable;
     }
 
     public int[][] decompress() {
         List<Integer> indexStream = new ArrayList<>(imageDescriptor.width() * imageDescriptor.height());
-        CodeTable codeTable = new CodeTable(colorTable, lzwCodeSize);
+        CodeTable codeTable = new CodeTable(lzwCodeSize);
         BitSet codeStream = getImageDataBitSet();
         int currentCodeSize = lzwCodeSize + 1;
         // Skip clear code

@@ -1,12 +1,12 @@
 package tech.houssemnasri.gifx.parser.lzw;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import tech.houssemnasri.gifx.parser.ColorTable;
 
 public class CodeTable {
-    private final ColorTable colorTable;
     private final int lzwCodeSize;
 
     private int endOfInformationCode = -1;
@@ -18,23 +18,22 @@ public class CodeTable {
      */
     private final List<List<Integer>> codeTable = new ArrayList<>(4096);
 
-    public CodeTable(ColorTable colorTable, int lzwCodeSize) {
-        this.colorTable = colorTable;
+    public CodeTable(int lzwCodeSize) {
         this.lzwCodeSize = lzwCodeSize;
         reInitialize();
     }
 
     public void reInitialize() {
         codeTable.clear();
-        for (int colorIndex = 0; colorIndex < colorTable.getColorsCount(); colorIndex++) {
+        clearCode = twoPowerN(lzwCodeSize);
+        endOfInformationCode = clearCode + 1;
+
+        for (int colorIndex = 0; colorIndex < clearCode; colorIndex++) {
             addCode(new ArrayList<>(List.of(colorIndex)));
         }
-        // Add clear code
-        clearCode = twoPowerN(lzwCodeSize);
-        addControlCode();
-        // Add end of information code
-        endOfInformationCode = clearCode + 1;
-        addControlCode();
+        // Add clear and end of information codes
+        addCode(Collections.emptyList());
+        addCode(Collections.emptyList());
     }
 
     private int twoPowerN(int n) {
@@ -43,10 +42,6 @@ public class CodeTable {
 
     public void addCode(List<Integer> codeIndices) {
         codeTable.add(codeIndices);
-    }
-
-    private void addControlCode() {
-        addCode(new ArrayList<>());
     }
 
     public List<Integer> getIndices(int code) {
@@ -64,7 +59,6 @@ public class CodeTable {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-
         int i = 0;
         for (List<Integer> row : codeTable) {
             builder.append("#%d ".formatted(i++));
