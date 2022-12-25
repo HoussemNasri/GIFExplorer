@@ -21,6 +21,7 @@ import tech.houssemnasri.gifx.explorer.GIFSection;
 import tech.houssemnasri.gifx.explorer.GIFSectionView;
 import tech.houssemnasri.gifx.explorer.ColorTableViewer;
 import tech.houssemnasri.gifx.explorer.DebugGIFParseListener;
+import tech.houssemnasri.gifx.explorer.GraphicImageRenderer;
 import tech.houssemnasri.gifx.parser.GIFParseResult;
 import tech.houssemnasri.gifx.parser.GIFParser;
 import tech.houssemnasri.gifx.parser.lzw.ImageDataDecompressor;
@@ -46,22 +47,12 @@ public class HelloApplication extends Application {
 
         // GIFParseResult parseResult4 = gifParser4.parse();
 
-        GIFParseResult toViewImageParseResult = parseResult3;
+        GIFParseResult toViewImageParseResult = parseResult1;
 
-        ImageDataDecompressor decompressor = new ImageDataDecompressor(
-                flattenList(toViewImageParseResult.getGraphicImages().get(0).getCompressedImageData().data()),
-                toViewImageParseResult.getGraphicImages().get(0).getCompressedImageData().lzwCodeSize(),
-                toViewImageParseResult.getGraphicImages().get(0).getDescriptor()
+        WritableImage writableImage = new GraphicImageRenderer().render(
+                toViewImageParseResult.getGraphicImages().get(4),
+                toViewImageParseResult.getGlobalColorTable().get()
         );
-        int[][] bitmap = decompressor.decompress();
-
-        WritableImage writableImage = new WritableImage(bitmap[0].length, bitmap.length);
-
-        for (int y = 0; y < bitmap.length; y++) {
-            for (int x = 0; x < bitmap[0].length; x++) {
-                writableImage.getPixelWriter().setColor(x, y, toViewImageParseResult.getGlobalColorTable().get().getColor(bitmap[y][x]));
-            }
-        }
 
         ColorTableViewer colorTableViewer = new ColorTableViewer(toViewImageParseResult.getGlobalColorTable().orElseThrow());
         ImageView imageView = new ImageView(writableImage);
@@ -72,9 +63,8 @@ public class HelloApplication extends Application {
         // ScrollPane scrollPane = new ScrollPane(sectionView);
         ScrollPane scrollPane = new GIFExplorer(Path.of("C:\\Users\\Houssem\\Desktop\\giphy.gif"));
 
-        root.getChildren().setAll(scrollPane);
+        root.getChildren().setAll(imageView);
         stage.show();
-
 
         AnchorPane.setBottomAnchor(scrollPane, 0d);
         AnchorPane.setTopAnchor(scrollPane, 0d);

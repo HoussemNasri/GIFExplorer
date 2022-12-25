@@ -20,7 +20,7 @@ public class ImageDataDecompressor {
         this.imageDescriptor = imageDescriptor;
     }
 
-    public int[][] decompress() {
+    public Integer[][] decompress() {
         List<Integer> indexStream = new ArrayList<>(imageDescriptor.width() * imageDescriptor.height());
         CodeTable codeTable = new CodeTable(lzwCodeSize);
         BitSet codeStream = getImageDataBitSet();
@@ -80,8 +80,8 @@ public class ImageDataDecompressor {
         return transformIndexStreamIntoBitmap(indexStream);
     }
 
-    private int[][] transformIndexStreamIntoBitmap(List<Integer> indexStream) {
-        int[][] bitmap = new int[imageDescriptor.height()][imageDescriptor.width()];
+    private Integer[][] transformIndexStreamIntoBitmap(List<Integer> indexStream) {
+        Integer[][] bitmap = new Integer[imageDescriptor.height()][imageDescriptor.width()];
         outer:
         for (int i = 0; i < imageDescriptor.height(); i++) {
             for (int j = 0; j < imageDescriptor.width(); j++) {
