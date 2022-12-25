@@ -86,6 +86,11 @@ public class GIFExplorer extends ScrollPane implements GIFParserListener {
 
     @Override
     public void onGlobalColorTableParsed(ColorTable globalColorTable, Integer[] bytes) {
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("Color Count", globalColorTable.getColorsCount().toString());
+
+        attachSectionToUI(new GIFSection("Global Color Table", offset, props, Color.GRAY, bytes));
+
         offset += bytes.length;
     }
 
