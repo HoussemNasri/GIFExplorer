@@ -6,8 +6,7 @@ public final class GraphicImage implements GIFBlock {
     private GraphicControlExtension graphicControlExtension;
     private final ImageDescriptor descriptor;
     private ColorTable localColorTable;
-
-    private LZWCompressedImageData compressedImageData;
+    private CompressedImageData compressedImageData;
 
     public GraphicImage(ImageDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -33,11 +32,11 @@ public final class GraphicImage implements GIFBlock {
         return Optional.ofNullable(localColorTable);
     }
 
-    public void setCompressedImageData(LZWCompressedImageData compressedImageData) {
+    public void setCompressedImageData(CompressedImageData compressedImageData) {
         this.compressedImageData = compressedImageData;
     }
 
-    public LZWCompressedImageData getCompressedImageData() {
+    public CompressedImageData getCompressedImageData() {
         return compressedImageData;
     }
 

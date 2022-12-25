@@ -146,7 +146,7 @@ public class GIFParser {
             imageData.add(Arrays.stream(subBlock).boxed().toList());
             subBlockSize = readByte();
         }
-        graphicImage.setCompressedImageData(new LZWCompressedImageData(lzwCodeSize, imageData));
+        graphicImage.setCompressedImageData(new CompressedImageData(lzwCodeSize, imageData));
 
         return notifyListenerAndGetParsedBlock(graphicImage);
     }
