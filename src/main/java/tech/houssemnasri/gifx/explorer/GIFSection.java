@@ -13,18 +13,18 @@ public class GIFSection {
     private final int offset;
     private final int length;
     private final Color color;
-    private final Map<String, String> properties = new HashMap<>();
+    private final Map<String, String> propertiesToShow = new HashMap<>();
 
     private final Integer[] bytes;
     private javafx.scene.Node sectionPreview;
 
-    public GIFSection(String title, int offset, Map<String, String> properties, Color color, Integer[] bytes) {
+    public GIFSection(String title, int offset, Map<String, String> propertiesToShow, Color color, Integer[] bytes) {
         this.title = title;
         this.offset = offset;
         this.length = bytes.length;
         this.color = color;
         this.bytes = bytes;
-        this.properties.putAll(properties);
+        this.propertiesToShow.putAll(propertiesToShow);
     }
 
     public Integer[] getBytes() {
@@ -55,12 +55,12 @@ public class GIFSection {
         return getPreview().isPresent();
     }
 
-    public Map<String, String> getProperties() {
-        return Map.copyOf(properties);
+    public Map<String, String> getPropertiesToShow() {
+        return Map.copyOf(propertiesToShow);
     }
 
     public boolean hasProperties() {
-        return !getProperties().isEmpty();
+        return !getPropertiesToShow().isEmpty();
     }
 
     public Paint getColor() {

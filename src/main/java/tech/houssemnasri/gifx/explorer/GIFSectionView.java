@@ -90,7 +90,7 @@ public class GIFSectionView extends VBox {
 
     private AnchorPane createSectionPropsView() {
         int propsPerRow = 2;
-        int numberOfRows = Math.ceilDiv(gifSection.getProperties().size(), propsPerRow);
+        int numberOfRows = Math.ceilDiv(gifSection.getPropertiesToShow().size(), propsPerRow);
 
         GridPane propsGridView = new GridPane();
         propsGridView.getStyleClass().add("props-grid-view");
@@ -107,7 +107,7 @@ public class GIFSectionView extends VBox {
 
         propsGridView.getColumnConstraints().addAll(column1, column2, column3, column4);
 
-        Iterator<Map.Entry<String, String>> propsIterator = gifSection.getProperties().entrySet().iterator();
+        Iterator<Map.Entry<String, String>> propsIterator = gifSection.getPropertiesToShow().entrySet().iterator();
 
         for (int row = 0; row < numberOfRows; row++) {
             RowConstraints rowConstraints = new RowConstraints(36, 36, 36);
