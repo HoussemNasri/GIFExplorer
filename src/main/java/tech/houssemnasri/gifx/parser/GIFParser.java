@@ -30,7 +30,7 @@ public class GIFParser {
 
     private List<Integer> currentBlockBytes = new ArrayList<>();
 
-    private GIFParserListener listener;
+    private GIFParseListener listener;
 
     public GIFParser(InputStream inputStream) {
         reader = new DataInputStream(new BufferedInputStream(inputStream));
@@ -40,7 +40,7 @@ public class GIFParser {
         this(new FileInputStream(path));
     }
 
-    public void setParserListener(GIFParserListener listener) {
+    public void setParserListener(GIFParseListener listener) {
         this.listener = listener;
     }
 

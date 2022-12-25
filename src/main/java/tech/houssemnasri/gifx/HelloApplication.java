@@ -20,7 +20,7 @@ import tech.houssemnasri.gifx.explorer.GIFExplorer;
 import tech.houssemnasri.gifx.explorer.GIFSection;
 import tech.houssemnasri.gifx.explorer.GIFSectionView;
 import tech.houssemnasri.gifx.explorer.ColorTableViewer;
-import tech.houssemnasri.gifx.explorer.DebugGIFParserListener;
+import tech.houssemnasri.gifx.explorer.DebugGIFParseListener;
 import tech.houssemnasri.gifx.parser.GIFParseResult;
 import tech.houssemnasri.gifx.parser.GIFParser;
 import tech.houssemnasri.gifx.parser.lzw.ImageDataDecompressor;
@@ -39,7 +39,7 @@ public class HelloApplication extends Application {
         GIFParser gifParser3 = new GIFParser(getClass().getResourceAsStream("sample_1.gif"));
         GIFParser gifParser4 = new GIFParser("C:\\Users\\Houssem\\Desktop\\Dancing.gif");
 
-        gifParser3.setParserListener(new DebugGIFParserListener());
+        gifParser3.setParserListener(new DebugGIFParseListener());
         GIFParseResult parseResult1 = gifParser.parse();
         GIFParseResult parseResult2 = gifParser2.parse();
         GIFParseResult parseResult3 = gifParser3.parse();
@@ -71,7 +71,7 @@ public class HelloApplication extends Application {
         GIFSectionView sectionView = new GIFSectionView(section);
 
         // ScrollPane scrollPane = new ScrollPane(sectionView);
-        ScrollPane scrollPane = new GIFExplorer(Path.of("C:\\Users\\Houssem\\Desktop\\Dancing.gif"));
+        ScrollPane scrollPane = new GIFExplorer(Path.of("C:\\Users\\Houssem\\Desktop\\giphy.gif"));
 
         root.getChildren().setAll(scrollPane);
         stage.show();

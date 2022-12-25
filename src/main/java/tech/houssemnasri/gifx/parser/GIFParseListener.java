@@ -1,6 +1,6 @@
 package tech.houssemnasri.gifx.parser;
 
-public abstract interface GIFParserListener {
+public abstract interface GIFParseListener {
     void onHeaderParsed(GIFHeader header, Integer[] bytes);
 
     void onScreenDescriptorParsed(ScreenDescriptor screenDescriptor, Integer[] bytes);

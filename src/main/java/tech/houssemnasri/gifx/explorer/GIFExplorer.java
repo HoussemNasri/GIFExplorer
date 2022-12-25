@@ -16,14 +16,14 @@ import tech.houssemnasri.gifx.parser.ColorTable;
 import tech.houssemnasri.gifx.parser.CommentExtension;
 import tech.houssemnasri.gifx.parser.GIFHeader;
 import tech.houssemnasri.gifx.parser.GIFParser;
-import tech.houssemnasri.gifx.parser.GIFParserListener;
+import tech.houssemnasri.gifx.parser.GIFParseListener;
 import tech.houssemnasri.gifx.parser.GraphicControlExtension;
 import tech.houssemnasri.gifx.parser.GraphicImage;
 import tech.houssemnasri.gifx.parser.ImageDescriptor;
 import tech.houssemnasri.gifx.parser.ScreenDescriptor;
 import tech.houssemnasri.gifx.parser.Trailer;
 
-public class GIFExplorer extends ScrollPane implements GIFParserListener {
+public class GIFExplorer extends ScrollPane implements GIFParseListener {
     private VBox container;
     private Integer offset = 0;
 

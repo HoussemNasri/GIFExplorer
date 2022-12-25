@@ -4,7 +4,7 @@ import tech.houssemnasri.gifx.parser.ApplicationExtension;
 import tech.houssemnasri.gifx.parser.ColorTable;
 import tech.houssemnasri.gifx.parser.CommentExtension;
 import tech.houssemnasri.gifx.parser.GIFHeader;
-import tech.houssemnasri.gifx.parser.GIFParserListener;
+import tech.houssemnasri.gifx.parser.GIFParseListener;
 import tech.houssemnasri.gifx.parser.GraphicControlExtension;
 import tech.houssemnasri.gifx.parser.GraphicImage;
 import tech.houssemnasri.gifx.parser.ImageDescriptor;
@@ -14,9 +14,9 @@ import tech.houssemnasri.gifx.parser.Trailer;
 import static tech.houssemnasri.gifx.utils.Utilities.*;
 
 /**
- * A simple {@link GIFParserListener} that prints the bytes of each block for debugging purposes
+ * A simple {@link GIFParseListener} that prints the bytes of each block for debugging purposes
  */
-public class DebugGIFParserListener implements GIFParserListener {
+public class DebugGIFParseListener implements GIFParseListener {
     @Override
     public void onHeaderParsed(GIFHeader header, Integer[] bytes) {
         System.out.println("Header Block");
