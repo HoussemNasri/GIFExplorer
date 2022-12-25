@@ -96,6 +96,12 @@ public class GIFExplorer extends ScrollPane implements GIFParserListener {
 
     @Override
     public void onApplicationExtensionParsed(ApplicationExtension appExtension, Integer[] bytes) {
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("Identifier", appExtension.getApplicationId());
+        props.put("Code", appExtension.getAuthCode().asASCII());
+
+        attachSectionToUI(new GIFSection("Application Extension", offset, props, Color.PLUM, bytes));
+
         offset += bytes.length;
     }
 
@@ -137,7 +143,7 @@ public class GIFExplorer extends ScrollPane implements GIFParserListener {
 
     @Override
     public void onTrailerParsed(Trailer trailer) {
-        attachSectionToUI(new GIFSection("Terminator", offset, Collections.emptyMap(), Color.SANDYBROWN, new Integer[]{trailer.getValue()}));
+        attachSectionToUI(new GIFSection("Terminator", offset, Collections.emptyMap(), Color.SANDYBROWN, new Integer[] {trailer.getValue()}));
         offset += 1;
     }
 }

@@ -3,35 +3,28 @@ package tech.houssemnasri.gifx.parser;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class ApplicationExtension implements GIFBlock {
-        /*
-         * Sequence of eight printable ASCII characters used to identify the application owning the Application Extension.
-         * */
-        private final String applicationId;
-        /*
-         * Sequence of three bytes used to authenticate the Application Identifier. An Application program may use an
-         * algorithm to compute a binary code that uniquely identifies it as the application owning
-         * the Application Extension.
-         * */
-        private final int[] applicationAuthenticationCode;
+    /*
+     * Sequence of eight printable ASCII characters used to identify the application owning the Application Extension.
+     * */
+    private final String applicationId;
+    private final AuthCode authCode;
+    SubBlocks applicationDataSubBlocks;
 
-        SubBlocks applicationDataSubBlocks;
-
-
-    public ApplicationExtension(String applicationId, int[] applicationAuthenticationCode) {
+    public ApplicationExtension(String applicationId, AuthCode authCode) {
         assert applicationId != null && applicationId.length() == 8;
-        assert applicationAuthenticationCode != null && applicationAuthenticationCode.length == 3;
         this.applicationId = applicationId;
-        this.applicationAuthenticationCode = applicationAuthenticationCode;
+        this.authCode = authCode;
     }
 
     public String getApplicationId() {
         return applicationId;
     }
 
-    public int[] getApplicationAuthenticationCode() {
-        return applicationAuthenticationCode;
+    public AuthCode getAuthCode() {
+        return authCode;
     }
 
     public void setApplicationDataSubBlocks(SubBlocks applicationDataSubBlocks) {
@@ -47,8 +40,34 @@ public final class ApplicationExtension implements GIFBlock {
     public String toString() {
         return "ApplicationExtension{" +
                 "applicationId='" + applicationId + '\'' +
-                ", applicationAuthenticationCode=" + Arrays.stream(applicationAuthenticationCode).mapToObj(i -> "0x" + Integer.toHexString(i).toUpperCase()).toList() +
+                ", applicationAuthenticationCode=" + authCode.asASCII() +
                 ", applicationDataSubBlocks=" + applicationDataSubBlocks +
                 '}';
+    }
+
+    /*
+     * Sequence of three bytes used to authenticate the Application Identifier. An Application program may use an
+     * algorithm to compute a binary code that uniquely identifies it as the application owning
+     * the Application Extension.
+     * */
+    public record AuthCode(Integer[] authCode) {
+        public AuthCode {
+            assert authCode != null && authCode.length == 3;
+        }
+
+        AuthCode(int[] authCode) {
+            this(Arrays.stream(authCode).boxed().toArray(Integer[]::new));
+        }
+
+        public String asASCII() {
+            return Arrays.stream(authCode)
+                         .map(byt -> (char) byt.intValue())
+                         .map(String::valueOf)
+                         .collect(Collectors.joining());
+        }
+
+        public Integer[] getContent() {
+            return authCode;
+        }
     }
 }

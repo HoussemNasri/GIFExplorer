@@ -189,7 +189,7 @@ public class GIFParser {
 
         skipSubBlocks();
 
-        return notifyListenerAndGetParsedBlock(new ApplicationExtension(applicationId, applicationAuthCode));
+        return notifyListenerAndGetParsedBlock(new ApplicationExtension(applicationId, new ApplicationExtension.AuthCode(applicationAuthCode)));
     }
 
     /**
