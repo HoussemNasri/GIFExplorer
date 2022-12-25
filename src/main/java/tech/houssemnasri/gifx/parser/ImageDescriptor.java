@@ -5,9 +5,9 @@ public record ImageDescriptor(
         Integer topPosition,
         Integer width,
         Integer height,
-        boolean hasLocalColorTable,
-        boolean isInterlaced,
-        boolean isColorsSorted,
+        Boolean hasLocalColorTable,
+        Boolean isInterlaced,
+        Boolean isColorsSorted,
         Integer localColorTableSize
 ) implements GIFBlock {
 }

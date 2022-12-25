@@ -22,6 +22,7 @@ import tech.houssemnasri.gifx.parser.GraphicImage;
 import tech.houssemnasri.gifx.parser.ImageDescriptor;
 import tech.houssemnasri.gifx.parser.ScreenDescriptor;
 import tech.houssemnasri.gifx.parser.Trailer;
+import tech.houssemnasri.gifx.utils.Utilities;
 
 public class GIFExplorer extends ScrollPane implements GIFParseListener {
     private VBox container;
@@ -112,6 +113,17 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
 
     @Override
     public void onImageDescriptorParsed(ImageDescriptor imageDescriptor, Integer[] bytes) {
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("Left", imageDescriptor.leftPosition().toString());
+        props.put("Width", imageDescriptor.width().toString());
+        props.put("Local Color Table?", imageDescriptor.hasLocalColorTable().toString());
+        props.put("Interlaced?", imageDescriptor.isInterlaced().toString());
+        props.put("Top", imageDescriptor.topPosition().toString());
+        props.put("Height", imageDescriptor.height().toString());
+        props.put("Colors Sorted?", imageDescriptor.isColorsSorted().toString());
+
+        attachSectionToUI(new GIFSection("Image Descriptor", offset, props, Color.LIGHTSALMON, bytes));
+
         offset += bytes.length;
     }
 
@@ -133,11 +145,28 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
 
     @Override
     public void onLocalColorTableParsed(ColorTable localColorTable, Integer[] bytes) {
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("Color Count", localColorTable.getColorsCount().toString());
+
+        attachSectionToUI(new GIFSection("Local Color Table", offset, props, Color.PALEVIOLETRED, bytes));
+
         offset += bytes.length;
     }
 
     @Override
     public void onImageDataParsed(GraphicImage graphicImage, Integer[] bytes) {
+        Integer lzwCodeSize = graphicImage.getCompressedImageData().lzwCodeSize();
+        Integer clearCode = Utilities.power(2, lzwCodeSize);
+        Integer endOfInformationCode = clearCode + 1;
+
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("LZW Code Size", lzwCodeSize.toString());
+        props.put("Clear Code", clearCode.toString());
+        props.put("End of Information Code", endOfInformationCode.toString());
+        props.put("Block Count", String.valueOf(graphicImage.getCompressedImageData().data().size()));
+
+        attachSectionToUI(new GIFSection("Image Data", offset, props, Color.TURQUOISE, bytes));
+
         offset += bytes.length;
     }
 
