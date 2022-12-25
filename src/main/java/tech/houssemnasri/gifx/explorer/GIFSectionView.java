@@ -61,8 +61,8 @@ public class GIFSectionView extends VBox {
         HBox.setHgrow(sectionTitle, Priority.ALWAYS);
 
         HBox headerPropViewsContainer = new HBox(16,
-                createTopPropsView("Offset", String.valueOf(gifSection.getOffset())),
-                createTopPropsView("Length", String.valueOf(gifSection.getLength()))
+                createTopPropsView("Offset", formatIntegerWithCommas(gifSection.getOffset())),
+                createTopPropsView("Length", formatIntegerWithCommas(gifSection.getLength()))
         );
         headerPropViewsContainer.setMinWidth(160);
         headerPropViewsContainer.setPrefWidth(360);
@@ -136,5 +136,9 @@ public class GIFSectionView extends VBox {
 
     public static GIFSectionView createHeaderSectionView(GIFSection gifSection) {
         return new GIFSectionView(gifSection);
+    }
+
+    private String formatIntegerWithCommas(Integer d) {
+        return String.format("%,d", d);
     }
 }
