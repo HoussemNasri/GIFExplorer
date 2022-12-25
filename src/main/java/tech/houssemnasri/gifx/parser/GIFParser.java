@@ -11,25 +11,22 @@ import java.util.Arrays;
 import java.util.List;
 
 import tech.houssemnasri.gifx.utils.BitSetWrapper;
+import tech.houssemnasri.gifx.utils.Utilities;
 
 public class GIFParser {
     /**
-     * Extension labels
+     * Block Labels
      */
     private static final int EXTENSION_INTRODUCER = 0x21;
     private static final int APPLICATION_EXTENSION_LABEL = 0xFF;
     private static final int COMMENT_EXTENSION_LABEL = 0xFE;
     private static final int GRAPHIC_CONTROL_EXTENSION_LABEL = 0xF9;
     private static final int PLAIN_TEXT_EXTENSION_LABEL = 0x01;
-
     private static final int IMAGE_DESCRIPTOR_LABEL = 0x2C;
-
     private static final int TRAILER_LABEL = 0x3B;
 
     private final DataInputStream reader;
-
-    private List<Integer> currentBlockBytes = new ArrayList<>();
-
+    private final List<Integer> currentBlockBytes = new ArrayList<>();
     private GIFParseListener listener;
 
     public GIFParser(InputStream inputStream) {
@@ -261,7 +258,7 @@ public class GIFParser {
                         hasGlobalColorTable,
                         colorResolution,
                         isColorsSorted,
-                        (int) Math.pow(2, globalColorTableSizeExponent + 1),
+                        Utilities.power(2, globalColorTableSizeExponent + 1),
                         backgroundColorIndex,
                         aspectRatio)
         );
