@@ -1,37 +1,51 @@
 package tech.houssemnasri.gifx.explorer;
 
-import javafx.scene.effect.Blend;
-import javafx.scene.effect.BlendMode;
+import javafx.scene.Node;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 
 import tech.houssemnasri.gifx.parser.ColorTable;
 
 public class ColorTableViewer extends FlowPane {
+    private static final Double GAP = 4d;
+    private static final Integer CELLS_PER_ROW = 16;
     private final ColorTable colorTable;
+    private final Double width;
+
+    public ColorTableViewer(ColorTable colorTable, Double width) {
+        this.colorTable = colorTable;
+        this.width = width;
+        initialize();
+    }
 
     public ColorTableViewer(ColorTable colorTable) {
-        this.colorTable = colorTable;
+        this(colorTable, 500d);
+    }
 
-        for(int i = 0; i < colorTable.getColorsCount(); i++) {
-            Text text = new Text(String.valueOf(i));
-            text.setFill(Color.MEDIUMPURPLE);
-            text.setEffect(new Blend(BlendMode.SCREEN));
-            text.setFont(Font.font("Roboto", FontWeight.BOLD, 25));
+    private void initialize() {
+        setHgap(GAP);
+        setVgap(GAP);
+        setPrefWidth(width);
+        setMaxWidth(width);
 
-            BorderPane pane = new BorderPane();
-            pane.setPrefSize(60, 60);
-            pane.setMinSize(60, 60);
-            pane.setBackground(Background.fill(colorTable.getColor(i)));
-            pane.setCenter(text);
-            getChildren().add(pane);
+        for (int colorIndex = 0; colorIndex < colorTable.getColorsCount(); colorIndex++) {
+            getChildren().add(createCell(colorIndex));
         }
     }
 
+    private Node createCell(Integer colorIndex) {
+        BorderPane pane = new BorderPane();
+        pane.setMinSize(computeCellSize(), computeCellSize());
+        pane.setBackground(Background.fill(colorTable.getColor(colorIndex)));
+        return pane;
+    }
 
+    private Double computeCellSize() {
+        // W = CELLS_PER_ROW * CELL_SIZE + CELLS_PER_ROW * GAP + GAP
+        // W = CELLS_PER_ROW * (CELL_SIZE + GAP) + GAP
+        // (W - GAP) / CELLS_PER_ROW = CELL_SIZE + GAP
+        // CELL_SIZE = (W - GAP) / CELLS_PER_ROW - GAP
+        return (width - GAP) / CELLS_PER_ROW - GAP;
+    }
 }

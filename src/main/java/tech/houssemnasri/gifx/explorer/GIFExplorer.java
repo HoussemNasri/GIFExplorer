@@ -94,7 +94,9 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         Map<String, String> props = new LinkedHashMap<>();
         props.put("Color Count", globalColorTable.getColorsCount().toString());
 
-        renderSection(new GIFSection("Global Color Table", offset, props, Color.GRAY, bytes));
+        GIFSection section = new GIFSection("Global Color Table", offset, props, Color.GHOSTWHITE, bytes);
+        section.setPreview(new ColorTableViewer(globalColorTable));
+        renderSection(section);
 
         offset += bytes.length;
     }
@@ -152,7 +154,9 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         Map<String, String> props = new LinkedHashMap<>();
         props.put("Color Count", localColorTable.getColorsCount().toString());
 
-        renderSection(new GIFSection("Local Color Table", offset, props, Color.PALEVIOLETRED, bytes));
+        GIFSection section = new GIFSection("Local Color Table", offset, props, Color.PALEVIOLETRED, bytes);
+        section.setPreview(new ColorTableViewer(localColorTable));
+        renderSection(section);
 
         offset += bytes.length;
     }
