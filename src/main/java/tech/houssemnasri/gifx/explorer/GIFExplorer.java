@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
@@ -27,8 +28,11 @@ import tech.houssemnasri.gifx.utils.Utilities;
 public class GIFExplorer extends ScrollPane implements GIFParseListener {
     private VBox container;
     private Integer offset = 0;
+    private final GraphicImageRenderer graphicRenderer;
 
-    public GIFExplorer(Path gifPath) {
+    public GIFExplorer(GraphicImageRenderer graphicRenderer, Path gifPath) {
+        Objects.requireNonNull(graphicRenderer);
+        this.graphicRenderer = graphicRenderer;
         setGIFPath(gifPath);
     }
 
@@ -165,7 +169,9 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         props.put("End of Information Code", endOfInformationCode.toString());
         props.put("Block Count", String.valueOf(graphicImage.getCompressedImageData().data().size()));
 
-        renderSection(new GIFSection("Image Data", offset, props, Color.TURQUOISE, bytes));
+        GIFSection section = new GIFSection("Image Data", offset, props, Color.TURQUOISE, bytes);
+        section.setPreview(graphicRenderer.render(graphicImage).toImageView());
+        renderSection(section);
 
         offset += bytes.length;
     }

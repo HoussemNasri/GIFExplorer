@@ -2,7 +2,6 @@ package tech.houssemnasri.gifx;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
@@ -22,11 +21,19 @@ import tech.houssemnasri.gifx.explorer.GIFSectionView;
 import tech.houssemnasri.gifx.explorer.ColorTableViewer;
 import tech.houssemnasri.gifx.explorer.DebugGIFParseListener;
 import tech.houssemnasri.gifx.explorer.GraphicImageRenderer;
+import tech.houssemnasri.gifx.explorer.GraphicImageRenderingContext;
+import tech.houssemnasri.gifx.parser.ColorTable;
 import tech.houssemnasri.gifx.parser.GIFParseResult;
 import tech.houssemnasri.gifx.parser.GIFParser;
-import tech.houssemnasri.gifx.parser.lzw.ImageDataDecompressor;
 
 public class HelloApplication extends Application {
+    private static final ColorTable DEFAULT_COLOR_TABLE = new ColorTable(2);
+
+    static {
+        DEFAULT_COLOR_TABLE.addColor(0x00, 0x00, 0x00);
+        DEFAULT_COLOR_TABLE.addColor(0xFF, 0xFF, 0xFF);
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
         AnchorPane root = new AnchorPane();
@@ -45,31 +52,26 @@ public class HelloApplication extends Application {
         GIFParseResult parseResult2 = gifParser2.parse();
         GIFParseResult parseResult3 = gifParser3.parse();
 
-        // GIFParseResult parseResult4 = gifParser4.parse();
-
         GIFParseResult toViewImageParseResult = parseResult1;
-
-        WritableImage writableImage = new GraphicImageRenderer().render(
-                toViewImageParseResult.getGraphicImages().get(4),
-                toViewImageParseResult.getGlobalColorTable().get()
+        GraphicImageRenderingContext renderingContext = new GraphicImageRenderingContext(
+                toViewImageParseResult.getGlobalColorTable().orElse(null),
+                DEFAULT_COLOR_TABLE
         );
+        GraphicImageRenderer graphicImageRenderer = new GraphicImageRenderer(renderingContext);
+        WritableImage writableImage = graphicImageRenderer.render(toViewImageParseResult.getGraphicImages().get(4)).toWritableImage();
 
         ColorTableViewer colorTableViewer = new ColorTableViewer(toViewImageParseResult.getGlobalColorTable().orElseThrow());
         ImageView imageView = new ImageView(writableImage);
-        var section = new GIFSection("Header", 5, Map.of("Width", "500", "Height", "150px", "Background Index", "0", "Global Color Table?", "true", "Color Table Size", "7"), Color.BURLYWOOD, new Integer[]{0x22, 0xEA, 0xFF});
-        section.setPreview(imageView);
-        GIFSectionView sectionView = new GIFSectionView(section);
 
-        // ScrollPane scrollPane = new ScrollPane(sectionView);
-        ScrollPane scrollPane = new GIFExplorer(Path.of("C:\\Users\\Houssem\\Desktop\\giphy.gif"));
+        GIFExplorer gifExplorer = new GIFExplorer(graphicImageRenderer, Path.of("C:\\Users\\Houssem\\Desktop\\giphy.gif"));
 
-        root.getChildren().setAll(imageView);
+        root.getChildren().setAll(gifExplorer);
         stage.show();
 
-        AnchorPane.setBottomAnchor(scrollPane, 0d);
-        AnchorPane.setTopAnchor(scrollPane, 0d);
-        AnchorPane.setLeftAnchor(scrollPane, 0d);
-        AnchorPane.setRightAnchor(scrollPane, 0d);
+        AnchorPane.setBottomAnchor(gifExplorer, 0d);
+        AnchorPane.setTopAnchor(gifExplorer, 0d);
+        AnchorPane.setLeftAnchor(gifExplorer, 0d);
+        AnchorPane.setRightAnchor(gifExplorer, 0d);
     }
 
     public static void main(String[] args) {

@@ -3,6 +3,8 @@ package tech.houssemnasri.gifx.explorer;
 import java.util.Collection;
 import java.util.List;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 
 import tech.houssemnasri.gifx.parser.ColorTable;
@@ -10,8 +12,17 @@ import tech.houssemnasri.gifx.parser.GraphicImage;
 import tech.houssemnasri.gifx.parser.lzw.ImageDataDecompressor;
 
 public class GraphicImageRenderer {
+    private final GraphicImageRenderingContext renderingContext;
 
-    public WritableImage render(GraphicImage graphic, ColorTable renderingColorTable) {
+    public GraphicImageRenderer(GraphicImageRenderingContext renderingContext) {
+        this.renderingContext = renderingContext;
+    }
+
+    public GraphicImageRenderer.Result render(GraphicImage graphic) {
+        ColorTable renderingColorTable = graphic.getLocalColorTable()
+                .or(renderingContext::getGlobalColorTable)
+                .orElse(renderingContext.getDefaultColorTable());
+
         ImageDataDecompressor decompressor = new ImageDataDecompressor(
                 flatten(graphic.getCompressedImageData().data()),
                 graphic.getCompressedImageData().lzwCodeSize(),
@@ -27,10 +38,22 @@ public class GraphicImageRenderer {
             }
         }
 
-        return renderedImage;
+        return new Result(renderedImage);
     }
 
     private Integer[] flatten(List<List<Integer>> matrix) {
         return matrix.stream().flatMap(Collection::stream).toArray(Integer[]::new);
+    }
+
+    public record Result(
+            WritableImage writableImage
+    ) {
+        public WritableImage toWritableImage() {
+            return writableImage;
+        }
+
+        public ImageView toImageView() {
+            return new ImageView(writableImage);
+        }
     }
 }
