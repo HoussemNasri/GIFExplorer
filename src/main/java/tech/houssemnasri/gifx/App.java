@@ -5,19 +5,15 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import tech.houssemnasri.gifx.explorer.GIFExplorer;
-import tech.houssemnasri.gifx.explorer.GIFSection;
-import tech.houssemnasri.gifx.explorer.GIFSectionView;
 import tech.houssemnasri.gifx.explorer.ColorTableViewer;
 import tech.houssemnasri.gifx.explorer.DebugGIFParseListener;
 import tech.houssemnasri.gifx.explorer.GraphicImageRenderer;
@@ -26,7 +22,7 @@ import tech.houssemnasri.gifx.parser.ColorTable;
 import tech.houssemnasri.gifx.parser.GIFParseResult;
 import tech.houssemnasri.gifx.parser.GIFParser;
 
-public class HelloApplication extends Application {
+public class App extends Application {
     private static final ColorTable DEFAULT_COLOR_TABLE = new ColorTable(2);
 
     static {
@@ -38,7 +34,7 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         AnchorPane root = new AnchorPane();
         Scene scene = new Scene(root, 1400, 600);
-        scene.getStylesheets().add(Objects.requireNonNull(HelloApplication.class.getResource("Base.css")).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(App.class.getResource("Base.css")).toExternalForm());
         stage.setTitle("Hello!");
         stage.setScene(scene);
 
