@@ -1,5 +1,6 @@
 package tech.houssemnasri.gifx.explorer;
 
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
@@ -28,6 +29,7 @@ public class ColorTableViewer extends FlowPane {
         setVgap(GAP);
         setPrefWidth(width);
         setMaxWidth(width);
+        setAlignment(Pos.CENTER);
 
         for (int colorIndex = 0; colorIndex < colorTable.getColorsCount(); colorIndex++) {
             getChildren().add(createCell(colorIndex));
