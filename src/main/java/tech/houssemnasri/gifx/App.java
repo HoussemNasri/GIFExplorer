@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import tech.houssemnasri.gifx.explorer.GIFChooserView;
 import tech.houssemnasri.gifx.explorer.GIFExplorer;
 import tech.houssemnasri.gifx.explorer.ColorTableViewer;
 import tech.houssemnasri.gifx.explorer.DebugGIFParseListener;
@@ -32,7 +34,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        AnchorPane root = new AnchorPane();
+        VBox root = new VBox();
         Scene scene = new Scene(root, 1400, 600);
         scene.getStylesheets().add(Objects.requireNonNull(App.class.getResource("Base.css")).toExternalForm());
         stage.setTitle("Hello!");
@@ -40,7 +42,7 @@ public class App extends Application {
 
         GIFParser gifParser = new GIFParser(getClass().getResourceAsStream("giphy.gif"));
         GIFParser gifParser2 = new GIFParser("C:\\Users\\Houssem\\Desktop\\bell_v22.gif");
-        GIFParser gifParser3 = new GIFParser(getClass().getResourceAsStream("sample_1.gif"));
+        GIFParser gifParser3 = new GIFParser(getClass().getResourceAsStream("traffic_light.gif"));
         GIFParser gifParser4 = new GIFParser("C:\\Users\\Houssem\\Desktop\\Dancing.gif");
 
         gifParser3.setParserListener(new DebugGIFParseListener());
@@ -48,20 +50,21 @@ public class App extends Application {
         GIFParseResult parseResult2 = gifParser2.parse();
         GIFParseResult parseResult3 = gifParser3.parse();
 
-        GIFParseResult toViewImageParseResult = parseResult1;
+        GIFParseResult toViewImageParseResult = parseResult3;
         GraphicImageRenderingContext renderingContext = new GraphicImageRenderingContext(
                 toViewImageParseResult.getGlobalColorTable().orElse(null),
                 DEFAULT_COLOR_TABLE
         );
         GraphicImageRenderer graphicImageRenderer = new GraphicImageRenderer(renderingContext);
-        WritableImage writableImage = graphicImageRenderer.render(toViewImageParseResult.getGraphicImages().get(4)).toWritableImage();
+        WritableImage writableImage = graphicImageRenderer.render(toViewImageParseResult.getGraphicImages().get(0)).toWritableImage();
 
         ColorTableViewer colorTableViewer = new ColorTableViewer(toViewImageParseResult.getGlobalColorTable().orElseThrow());
         ImageView imageView = new ImageView(writableImage);
 
-        GIFExplorer gifExplorer = new GIFExplorer(graphicImageRenderer, Path.of("C:\\Users\\Houssem\\Desktop\\giphy.gif"));
+        GIFExplorer gifExplorer = new GIFExplorer(graphicImageRenderer, Path.of("C:\\Users\\Houssem\\Desktop\\traffic_light.gif"));
+        GIFChooserView gifChooserView = new GIFChooserView();
 
-        root.getChildren().setAll(gifExplorer);
+        root.getChildren().setAll(new AnchorPane(gifExplorer));
         stage.show();
 
         AnchorPane.setBottomAnchor(gifExplorer, 0d);

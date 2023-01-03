@@ -2,8 +2,10 @@
     -fx-font-family: Consolas;
     -fx-font-smoothing-type: gray;
 }
-.scroll-pane {
-    -fx-background-color: #fff;
+.scroll-pane  {
+    -fx-vbar-policy: never;
+    -fx-hbar-policy: never;
+    -fx-border-width: 0;
 }
 
 .section-title {
@@ -49,3 +51,20 @@
     -fx-background-color: transparent, -fx-mark-color;
     -fx-effect: null;
 }
+
+.sample-toggle {
+    -fx-padding: 12 12 12 12;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+
+
+.sample-toggle:hover {
+    -fx-background-color: #dfdfdf;
+}
+
+.sample-toggle:selected {
+    -fx-background-color: #c7c7c7;
+}
+

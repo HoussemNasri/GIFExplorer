@@ -1,6 +1,7 @@
 package tech.houssemnasri.gifx.explorer;
 
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -46,6 +47,16 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void exploreGIF(InputStream gifInputStream) {
+        // FIXME: Calling initUI() will re-construct the GIF chooser which breaks its listeners
+        initUI();
+        offset = 0;
+        GIFParser gifParser = new GIFParser(gifInputStream);
+        gifParser.setParserListener(this);
+        gifParser.parse();
+        System.out.println("Exploring... " + gifInputStream);
     }
 
     private void initUI() {
@@ -94,7 +105,7 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         Map<String, String> props = new LinkedHashMap<>();
         props.put("Color Count", globalColorTable.getColorsCount().toString());
 
-        GIFSection section = new GIFSection("Global Color Table", offset, props, Color.GHOSTWHITE, bytes);
+        GIFSection section = new GIFSection("Global Color Table", offset, props, Color.SILVER, bytes);
         section.setPreview(new ColorTableViewer(globalColorTable));
         renderSection(section);
 
@@ -154,7 +165,7 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         Map<String, String> props = new LinkedHashMap<>();
         props.put("Color Count", localColorTable.getColorsCount().toString());
 
-        GIFSection section = new GIFSection("Local Color Table", offset, props, Color.PALEVIOLETRED, bytes);
+        GIFSection section = new GIFSection("Local Color Table", offset, props, Color.MISTYROSE, bytes);
         section.setPreview(new ColorTableViewer(localColorTable));
         renderSection(section);
 
@@ -173,7 +184,7 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         props.put("End of Information Code", endOfInformationCode.toString());
         props.put("Block Count", String.valueOf(graphicImage.getCompressedImageData().data().size()));
 
-        GIFSection section = new GIFSection("Image Data", offset, props, Color.TURQUOISE, bytes);
+        GIFSection section = new GIFSection("Image Data", offset, props, Color.WHEAT, bytes);
         section.setPreview(graphicRenderer.render(graphicImage).toImageView());
         renderSection(section);
 
