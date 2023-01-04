@@ -78,7 +78,6 @@ public class GIFChooserView extends BorderPane {
     }
 
     private void selectSample(Toggle sampleToggle) {
-        System.out.println("Selecting Sample: " + ((GIFSample) sampleToggle.getUserData()).name());
         samplesGroup.selectToggle(sampleToggle);
         selectedSample.set((GIFSample) sampleToggle.getUserData());
     }
