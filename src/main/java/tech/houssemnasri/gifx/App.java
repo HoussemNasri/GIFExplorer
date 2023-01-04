@@ -1,32 +1,17 @@
 package tech.houssemnasri.gifx;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
-import tech.houssemnasri.gifx.explorer.GIFChooserView;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+
 import tech.houssemnasri.gifx.explorer.GIFExplorer;
-import tech.houssemnasri.gifx.explorer.ColorTableViewer;
-import tech.houssemnasri.gifx.explorer.DebugGIFParseListener;
-import tech.houssemnasri.gifx.explorer.GraphicImageRenderer;
-import tech.houssemnasri.gifx.explorer.GraphicImageRenderingContext;
-import tech.houssemnasri.gifx.parser.ColorTable;
-import tech.houssemnasri.gifx.parser.GIFParseResult;
-import tech.houssemnasri.gifx.parser.GIFParser;
 
 public class App extends Application {
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         AnchorPane root = new AnchorPane();
 
         GIFExplorer explorer = new GIFExplorer();
