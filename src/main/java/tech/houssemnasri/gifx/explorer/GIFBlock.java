@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.Node;
 
-public class GIFSection {
+public class GIFBlock {
     private final String title;
     private final int offset;
     private final int length;
@@ -16,9 +16,9 @@ public class GIFSection {
     private final Map<String, String> propertiesToShow = new HashMap<>();
 
     private final Integer[] bytes;
-    private javafx.scene.Node sectionPreview;
+    private javafx.scene.Node preview;
 
-    public GIFSection(String title, int offset, Map<String, String> propertiesToShow, Color color, Integer[] bytes) {
+    public GIFBlock(String title, int offset, Map<String, String> propertiesToShow, Color color, Integer[] bytes) {
         this.title = title;
         this.offset = offset;
         this.length = bytes.length;
@@ -44,11 +44,11 @@ public class GIFSection {
     }
 
     public void setPreview(Node preview) {
-        this.sectionPreview = preview;
+        this.preview = preview;
     }
 
     public Optional<javafx.scene.Node> getPreview() {
-        return Optional.ofNullable(sectionPreview);
+        return Optional.ofNullable(preview);
     }
 
     public boolean hasPreview() {

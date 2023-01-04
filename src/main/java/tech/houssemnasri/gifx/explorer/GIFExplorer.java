@@ -74,8 +74,8 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         }
     }
 
-    private void renderSection(GIFSection section) {
-        blocksContainer.getChildren().add(new GIFSectionView(section));
+    private void renderBlock(GIFBlock block) {
+        blocksContainer.getChildren().add(new GIFBlockView(block));
     }
 
     @Override
@@ -84,7 +84,7 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         props.put("Signature", "GIF");
         props.put("Version", header.getVersion().toString());
 
-        renderSection(new GIFSection("Header", offset, props, Color.CADETBLUE, bytes));
+        renderBlock(new GIFBlock("Header", offset, props, Color.CADETBLUE, bytes));
 
         offset += bytes.length;
     }
@@ -100,7 +100,7 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         props.put("Global Color Table?", screenDescriptor.hasGlobalColorTable().toString());
         props.put("Color Resolution", screenDescriptor.colorResolution().toString());
 
-        renderSection(new GIFSection("Logical Screen Descriptor", offset, props, Color.KHAKI, bytes));
+        renderBlock(new GIFBlock("Logical Screen Descriptor", offset, props, Color.KHAKI, bytes));
 
         offset += bytes.length;
     }
@@ -110,9 +110,9 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         Map<String, String> props = new LinkedHashMap<>();
         props.put("Color Count", globalColorTable.getColorsCount().toString());
 
-        GIFSection section = new GIFSection("Global Color Table", offset, props, Color.SILVER, bytes);
+        GIFBlock section = new GIFBlock("Global Color Table", offset, props, Color.SILVER, bytes);
         section.setPreview(new ColorTableViewer(globalColorTable));
-        renderSection(section);
+        renderBlock(section);
 
         offset += bytes.length;
     }
@@ -123,7 +123,7 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         props.put("Identifier", appExtension.getApplicationId());
         props.put("Code", appExtension.getAuthCode().asASCII());
 
-        renderSection(new GIFSection("Application Extension", offset, props, Color.PLUM, bytes));
+        renderBlock(new GIFBlock("Application Extension", offset, props, Color.PLUM, bytes));
 
         offset += bytes.length;
     }
@@ -144,7 +144,7 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         props.put("Height", imageDescriptor.height().toString());
         props.put("Colors Sorted?", imageDescriptor.isColorsSorted().toString());
 
-        renderSection(new GIFSection("Image Descriptor", offset, props, Color.LIGHTSALMON, bytes));
+        renderBlock(new GIFBlock("Image Descriptor", offset, props, Color.LIGHTSALMON, bytes));
 
         offset += bytes.length;
     }
@@ -160,7 +160,7 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         props.put("User Input?", gcExtension.shouldWaitForUserInput().toString());
         props.put("Delay Time", gcExtension.delayTime().toString());
 
-        renderSection(new GIFSection("Graphic Control Extension", offset, props, Color.LIGHTYELLOW, bytes));
+        renderBlock(new GIFBlock("Graphic Control Extension", offset, props, Color.LIGHTYELLOW, bytes));
 
         offset += bytes.length;
     }
@@ -170,9 +170,9 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         Map<String, String> props = new LinkedHashMap<>();
         props.put("Color Count", localColorTable.getColorsCount().toString());
 
-        GIFSection section = new GIFSection("Local Color Table", offset, props, Color.MISTYROSE, bytes);
+        GIFBlock section = new GIFBlock("Local Color Table", offset, props, Color.MISTYROSE, bytes);
         section.setPreview(new ColorTableViewer(localColorTable));
-        renderSection(section);
+        renderBlock(section);
 
         offset += bytes.length;
     }
@@ -189,16 +189,16 @@ public class GIFExplorer extends ScrollPane implements GIFParseListener {
         props.put("End of Information Code", endOfInformationCode.toString());
         props.put("Block Count", String.valueOf(graphicImage.getCompressedImageData().data().size()));
 
-        GIFSection section = new GIFSection("Image Data", offset, props, Color.WHEAT, bytes);
+        GIFBlock section = new GIFBlock("Image Data", offset, props, Color.WHEAT, bytes);
         section.setPreview(graphicRenderer.render(graphicImage).toImageView());
-        renderSection(section);
+        renderBlock(section);
 
         offset += bytes.length;
     }
 
     @Override
     public void onTrailerParsed(Trailer trailer) {
-        renderSection(new GIFSection("Terminator", offset, Collections.emptyMap(), Color.SANDYBROWN, new Integer[] {trailer.getValue()}));
+        renderBlock(new GIFBlock("Terminator", offset, Collections.emptyMap(), Color.SANDYBROWN, new Integer[] {trailer.getValue()}));
         offset += 1;
     }
 }

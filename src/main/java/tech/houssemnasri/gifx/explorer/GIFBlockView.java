@@ -20,11 +20,11 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.Node;
 
-public class GIFSectionView extends VBox {
-    private final GIFSection gifSection;
+public class GIFBlockView extends VBox {
+    private final GIFBlock gifSection;
 
-    public GIFSectionView(GIFSection gifSection) {
-        this.gifSection = gifSection;
+    public GIFBlockView(GIFBlock gifBlock) {
+        this.gifSection = gifBlock;
         initialize();
     }
 
@@ -134,8 +134,8 @@ public class GIFSectionView extends VBox {
         return propsGridContainer;
     }
 
-    public static GIFSectionView createHeaderSectionView(GIFSection gifSection) {
-        return new GIFSectionView(gifSection);
+    public static GIFBlockView createHeaderSectionView(GIFBlock gifBlock) {
+        return new GIFBlockView(gifBlock);
     }
 
     private String formatIntegerWithCommas(Integer d) {
