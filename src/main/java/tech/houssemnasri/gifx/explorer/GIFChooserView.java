@@ -1,6 +1,5 @@
 package tech.houssemnasri.gifx.explorer;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +26,7 @@ public class GIFChooserView extends BorderPane {
     };
 
     private final ToggleGroup samplesGroup = new ToggleGroup();
-    private final ObjectProperty<InputStream> selectedImageStream = new SimpleObjectProperty<>();
+    private final ObjectProperty<GIFSample> selectedSample = new SimpleObjectProperty<>();
 
     public GIFChooserView() {
         initialize();
@@ -45,27 +44,17 @@ public class GIFChooserView extends BorderPane {
         }
 
         selectSample(samplesGroup.getToggles().get(0));
-        samplesGroup.selectedToggleProperty().addListener((obs, old, value) -> {
-            if (value != null) {
-                selectSample(value);
+        samplesGroup.selectedToggleProperty().addListener((obs, old, sampleToggle) -> {
+            if (sampleToggle != null) {
+                selectSample(sampleToggle);
             }
         });
     }
 
     private Node createSampleView(String sampleName) {
-        InputStream imageInputStream = getClass().getResourceAsStream("/tech/houssemnasri/gifx/" + sampleName);
-        if (imageInputStream == null) {
-            throw new RuntimeException("Failed to load sample image: " + sampleName);
-        }
+        GIFSample sample = new GIFSample(sampleName);
 
-        byte[] imageBytes;
-        try {
-            imageBytes = imageInputStream.readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        ImageView sampleImage = new ImageView(new Image(new ByteArrayInputStream(imageBytes)));
+        ImageView sampleImage = new ImageView(new Image(sample.getAsStream()));
         sampleImage.setPreserveRatio(true);
         if (sampleImage.maxHeight(Double.MAX_VALUE) > 200) {
             sampleImage.setFitHeight(200);
@@ -74,22 +63,23 @@ public class GIFChooserView extends BorderPane {
         ToggleButton sampleToggle = new ToggleButton();
         sampleToggle.getStyleClass().add("sample-toggle");
         sampleToggle.setGraphic(sampleImage);
-        sampleToggle.setUserData(new ByteArrayInputStream(imageBytes));
+        sampleToggle.setUserData(sample);
         samplesGroup.getToggles().add(sampleToggle);
 
         return sampleToggle;
     }
 
-    public ReadOnlyObjectProperty<InputStream> selectedImageStreamProperty() {
-        return selectedImageStream;
+    public ReadOnlyObjectProperty<GIFSample> selectedSampleProperty() {
+        return selectedSample;
     }
 
-    public InputStream getSelectedImageStream() {
-        return selectedImageStream.getValue();
+    public GIFSample getSelectedSample() {
+        return selectedSample.getValue();
     }
 
     private void selectSample(Toggle sampleToggle) {
+        System.out.println("Selecting Sample: " + ((GIFSample) sampleToggle.getUserData()).name());
         samplesGroup.selectToggle(sampleToggle);
-        selectedImageStream.set((InputStream) sampleToggle.getUserData());
+        selectedSample.set((GIFSample) sampleToggle.getUserData());
     }
 }

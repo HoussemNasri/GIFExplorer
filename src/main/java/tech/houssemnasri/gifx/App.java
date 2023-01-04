@@ -34,7 +34,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        VBox root = new VBox();
+        AnchorPane root = new AnchorPane();
         Scene scene = new Scene(root, 1400, 600);
         scene.getStylesheets().add(Objects.requireNonNull(App.class.getResource("Base.css")).toExternalForm());
         stage.setTitle("Hello!");
@@ -61,10 +61,9 @@ public class App extends Application {
         ColorTableViewer colorTableViewer = new ColorTableViewer(toViewImageParseResult.getGlobalColorTable().orElseThrow());
         ImageView imageView = new ImageView(writableImage);
 
-        GIFExplorer gifExplorer = new GIFExplorer(graphicImageRenderer, Path.of("C:\\Users\\Houssem\\Desktop\\traffic_light.gif"));
-        GIFChooserView gifChooserView = new GIFChooserView();
+        GIFExplorer gifExplorer = new GIFExplorer();
 
-        root.getChildren().setAll(new AnchorPane(gifExplorer));
+        root.getChildren().setAll(gifExplorer);
         stage.show();
 
         AnchorPane.setBottomAnchor(gifExplorer, 0d);

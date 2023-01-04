@@ -1,12 +1,9 @@
 package tech.houssemnasri.gifx.explorer;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
@@ -17,8 +14,9 @@ import tech.houssemnasri.gifx.parser.ApplicationExtension;
 import tech.houssemnasri.gifx.parser.ColorTable;
 import tech.houssemnasri.gifx.parser.CommentExtension;
 import tech.houssemnasri.gifx.parser.GIFHeader;
-import tech.houssemnasri.gifx.parser.GIFParser;
 import tech.houssemnasri.gifx.parser.GIFParseListener;
+import tech.houssemnasri.gifx.parser.GIFParseResult;
+import tech.houssemnasri.gifx.parser.GIFParser;
 import tech.houssemnasri.gifx.parser.GraphicControlExtension;
 import tech.houssemnasri.gifx.parser.GraphicImage;
 import tech.houssemnasri.gifx.parser.ImageDescriptor;
@@ -27,50 +25,57 @@ import tech.houssemnasri.gifx.parser.Trailer;
 import tech.houssemnasri.gifx.utils.Utilities;
 
 public class GIFExplorer extends ScrollPane implements GIFParseListener {
-    private VBox container;
+    private VBox blocksContainer;
     private Integer offset = 0;
-    private final GraphicImageRenderer graphicRenderer;
+    private GraphicImageRenderer graphicRenderer;
 
-    public GIFExplorer(GraphicImageRenderer graphicRenderer, Path gifPath) {
-        Objects.requireNonNull(graphicRenderer);
-        this.graphicRenderer = graphicRenderer;
-        setGIFPath(gifPath);
+    public GIFExplorer() {
+        initialize();
     }
 
-    public void setGIFPath(Path gifPath) {
-        initUI();
-        offset = 0;
-        try {
-            GIFParser gifParser = new GIFParser(gifPath.toAbsolutePath().toString());
-            gifParser.setParserListener(this);
-            gifParser.parse();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private void initialize() {
+        VBox root = new VBox(16d);
 
-    private void exploreGIF(InputStream gifInputStream) {
-        // FIXME: Calling initUI() will re-construct the GIF chooser which breaks its listeners
-        initUI();
-        offset = 0;
-        GIFParser gifParser = new GIFParser(gifInputStream);
-        gifParser.setParserListener(this);
-        gifParser.parse();
-        System.out.println("Exploring... " + gifInputStream);
-    }
+        blocksContainer = new VBox(8d);
 
-    private void initUI() {
-        container = new VBox();
-        container.setSpacing(8d);
+        GIFChooserView gifChooser = new GIFChooserView();
+        GIFSample initialSample = gifChooser.getSelectedSample();
+        exploreGIF(initialSample.getAsStream(), createGraphicRendererFor(initialSample.getAsStream()));
+        gifChooser.selectedSampleProperty().addListener((obs, old, sample) -> {
+            exploreGIF(sample.getAsStream(), createGraphicRendererFor(sample.getAsStream()));
+        });
+
+        root.getChildren().setAll(gifChooser, blocksContainer);
 
         this.setFitToHeight(true);
         this.setFitToWidth(true);
         this.setPadding(new Insets(16, 24, 16, 24));
-        this.setContent(container);
+        this.setContent(root);
+    }
+
+    private void exploreGIF(InputStream gifInputStream, GraphicImageRenderer graphicRenderer) {
+        this.graphicRenderer = graphicRenderer;
+        offset = 0;
+        clearBlocks();
+        GIFParser gifParser = new GIFParser(gifInputStream);
+        gifParser.setParserListener(this);
+        gifParser.parse();
+    }
+
+    private GraphicImageRenderer createGraphicRendererFor(InputStream gifInputStream) {
+        GIFParseResult result = new GIFParser(gifInputStream).parse();
+        GraphicImageRenderingContext renderingContext = new GraphicImageRenderingContext(result.getGlobalColorTable().orElse(null));
+        return new GraphicImageRenderer(renderingContext);
+    }
+
+    private void clearBlocks() {
+        if (blocksContainer != null) {
+            blocksContainer.getChildren().clear();
+        }
     }
 
     private void renderSection(GIFSection section) {
-        container.getChildren().add(new GIFSectionView(section));
+        blocksContainer.getChildren().add(new GIFSectionView(section));
     }
 
     @Override
